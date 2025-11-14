@@ -141,6 +141,15 @@
             background-color: #27ae60;
         }
 
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
@@ -635,6 +644,9 @@
         let currencySymbol = currencyRates[currentCurrency].symbol;
         let conversionRate = currencyRates[currentCurrency].rate;
 
+        // Get checkout URL from localStorage or default to Google Form
+        let checkoutUrl = localStorage.getItem('checkoutUrl') || 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
+
         // Initialize data if not exists
         function initializeData() {
             if (!localStorage.getItem('products')) {
@@ -646,7 +658,8 @@
                         price: 89.99,
                         image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
                         category: "Accessories",
-                        features: ["RGB Backlight", "Mechanical Switches", "Anti-ghosting", "Wrist Rest"]
+                        features: ["RGB Backlight", "Mechanical Switches", "Anti-ghosting", "Wrist Rest"],
+                        productUrl: "https://example.com/product/gaming-keyboard"
                     },
                     {
                         id: 2,
@@ -655,7 +668,8 @@
                         price: 59.99,
                         image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
                         category: "Accessories",
-                        features: ["Wireless", "Adjustable DPI", "Ergonomic", "Long Battery"]
+                        features: ["Wireless", "Adjustable DPI", "Ergonomic", "Long Battery"],
+                        productUrl: "https://example.com/product/wireless-mouse"
                     },
                     {
                         id: 3,
@@ -664,7 +678,8 @@
                         price: 79.99,
                         image: "https://images.unsplash.com/photo-1599669454699-248893623440?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
                         category: "Audio",
-                        features: ["Noise Cancellation", "Surround Sound", "Memory Foam", "Retractable Mic"]
+                        features: ["Noise Cancellation", "Surround Sound", "Memory Foam", "Retractable Mic"],
+                        productUrl: "https://example.com/product/gaming-headset"
                     },
                     {
                         id: 4,
@@ -673,7 +688,8 @@
                         price: 299.99,
                         image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
                         category: "Displays",
-                        features: ["144Hz Refresh", "1ms Response", "IPS Panel", "AMD FreeSync"]
+                        features: ["144Hz Refresh", "1ms Response", "IPS Panel", "AMD FreeSync"],
+                        productUrl: "https://example.com/product/gaming-monitor"
                     }
                 ];
                 localStorage.setItem('products', JSON.stringify(defaultProducts));
@@ -749,6 +765,13 @@
                             ${(product.features || ['High Quality', 'Durable', 'Premium Build']).map(feature => `<li>${feature}</li>`).join('')}
                         </ul>
                     </div>
+                    ${product.productUrl ? `
+                    <div class="form-group">
+                        <a href="${product.productUrl}" target="_blank" class="btn btn-outline">
+                            <i class="fas fa-external-link-alt"></i> View Product Page
+                        </a>
+                    </div>
+                    ` : ''}
                     <button class="btn btn-primary" onclick="buyNow(${product.id})">
                         <i class="fas fa-bolt"></i> Buy Now
                     </button>
@@ -918,8 +941,8 @@
             orders.push(newOrder);
             localStorage.setItem('orders', JSON.stringify(orders));
             
-            // Redirect to Google Form
-            window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
+            // Redirect to checkout URL
+            window.location.href = checkoutUrl;
             
             // Clear cart after checkout
             clearCart();
