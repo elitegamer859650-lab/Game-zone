@@ -66,6 +66,16 @@
         .header-actions {
             display: flex;
             gap: 15px;
+            align-items: center;
+        }
+
+        .currency-selector {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
         }
 
         .btn {
@@ -243,6 +253,13 @@
             color: #aaa;
         }
 
+        .powered-by {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #ddd;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -252,6 +269,16 @@
 
             .admin-nav {
                 flex-wrap: wrap;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .currency-selector {
+                width: 100%;
+                margin-bottom: 10px;
             }
         }
     </style>
@@ -292,6 +319,13 @@
                         <span>GameZone Admin</span>
                     </div>
                     <div class="header-actions">
+                        <select id="currencySelect" class="currency-selector" onchange="updateCurrency(this.value)">
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="GBP">GBP (£)</option>
+                            <option value="INR">INR (₹)</option>
+                            <option value="JPY">JPY (¥)</option>
+                        </select>
                         <button class="btn btn-outline" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </button>
@@ -376,12 +410,20 @@
                         <textarea id="productDescription" class="form-control" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="productPrice">Price</label>
+                        <label for="productPrice">Price (USD)</label>
                         <input type="number" id="productPrice" class="form-control" step="0.01" min="0" required>
                     </div>
                     <div class="form-group">
                         <label for="productImage">Image URL</label>
                         <input type="url" id="productImage" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <input type="text" id="productCategory" class="form-control" value="Gaming Accessories">
+                    </div>
+                    <div class="form-group">
+                        <label for="productFeatures">Features (comma separated)</label>
+                        <input type="text" id="productFeatures" class="form-control" placeholder="High Quality, Durable, Premium Build">
                     </div>
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-plus"></i> Add Product
@@ -396,6 +438,9 @@
                 <div class="copyright">
                     &copy; 2023 GameZone. All rights reserved.
                 </div>
+                <div class="powered-by">
+                    Powered by MGP Studio
+                </div>
             </div>
         </footer>
     </div>
@@ -405,12 +450,27 @@
         const ADMIN_EMAIL = "elitegamer859650@gmail.com";
         const ADMIN_PASSWORD = "acer4321234@";
 
+        // Currency configuration
+        const currencyRates = {
+            'USD': { symbol: '$', rate: 1 },
+            'EUR': { symbol: '€', rate: 0.85 },
+            'GBP': { symbol: '£', rate: 0.73 },
+            'INR': { symbol: '₹', rate: 74.5 },
+            'JPY': { symbol: '¥', rate: 110 }
+        };
+
+        // Get selected currency from localStorage or default to USD
+        let currentCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+        let currencySymbol = currencyRates[currentCurrency].symbol;
+        let conversionRate = currencyRates[currentCurrency].rate;
+
         // Check if user is already logged in
         function checkLogin() {
             const isLoggedIn = localStorage.getItem('adminLoggedIn');
             if (isLoggedIn === 'true') {
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('currencySelect').value = currentCurrency;
                 loadProductsTable();
                 loadOrdersTable();
             }
@@ -426,6 +486,7 @@
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
                 document.getElementById('loginError').style.display = 'none';
+                document.getElementById('currencySelect').value = currentCurrency;
                 loadProductsTable();
                 loadOrdersTable();
             } else {
@@ -440,6 +501,21 @@
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
+        }
+
+        // Update currency
+        function updateCurrency(currency) {
+            currentCurrency = currency;
+            localStorage.setItem('selectedCurrency', currency);
+            currencySymbol = currencyRates[currency].symbol;
+            conversionRate = currencyRates[currency].rate;
+            
+            // Reload tables to show updated prices
+            if (document.getElementById('productsSection').classList.contains('active')) {
+                loadProductsTable();
+            } else if (document.getElementById('ordersSection').classList.contains('active')) {
+                loadOrdersTable();
+            }
         }
 
         // Show section function
@@ -468,6 +544,11 @@
             }
         }
 
+        // Convert price based on selected currency
+        function convertPrice(price) {
+            return (price * conversionRate).toFixed(2);
+        }
+
         // Load products table
         function loadProductsTable() {
             const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -476,13 +557,15 @@
             productsTable.innerHTML = '';
             
             products.forEach(product => {
+                const convertedPrice = convertPrice(product.price);
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${product.id}</td>
-                    <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                    <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; padding: 5px;"></td>
                     <td>${product.name}</td>
-                    <td>${product.description}</td>
-                    <td>$${product.price.toFixed(2)}</td>
+                    <td>${product.description.substring(0, 80)}...</td>
+                    <td>${currencySymbol}${convertedPrice}</td>
                     <td>
                         <button class="btn btn-danger" onclick="deleteProduct(${product.id})">
                             <i class="fas fa-trash"></i> Delete
@@ -501,12 +584,17 @@
             ordersTable.innerHTML = '';
             
             orders.forEach(order => {
+                const orderCurrency = order.currency || 'USD';
+                const orderSymbol = currencyRates[orderCurrency].symbol;
+                const orderRate = currencyRates[orderCurrency].rate;
+                const convertedTotal = (order.total * orderRate).toFixed(2);
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${order.id}</td>
                     <td>${new Date(order.date).toLocaleDateString()}</td>
                     <td>${order.items.length} items</td>
-                    <td>$${order.total.toFixed(2)}</td>
+                    <td>${orderSymbol}${convertedTotal}</td>
                     <td>
                         <select onchange="updateOrderStatus(${order.id}, this.value)">
                             <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
@@ -537,6 +625,8 @@
             const description = document.getElementById('productDescription').value;
             const price = parseFloat(document.getElementById('productPrice').value);
             const image = document.getElementById('productImage').value;
+            const category = document.getElementById('productCategory').value;
+            const features = document.getElementById('productFeatures').value.split(',').map(f => f.trim());
             
             const products = JSON.parse(localStorage.getItem('products')) || [];
             const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
@@ -546,7 +636,9 @@
                 name: name,
                 description: description,
                 price: price,
-                image: image
+                image: image,
+                category: category,
+                features: features
             };
             
             products.push(newProduct);
@@ -554,6 +646,7 @@
             
             // Reset form
             document.getElementById('addProductForm').reset();
+            document.getElementById('productCategory').value = "Gaming Accessories";
             
             // Show success message
             alert('Product added successfully!');
@@ -588,13 +681,19 @@
             const order = orders.find(o => o.id === orderId);
             
             if (order) {
-                let details = `Order ID: ${order.id}\nDate: ${new Date(order.date).toLocaleString()}\nStatus: ${order.status}\n\nItems:\n`;
+                const orderCurrency = order.currency || 'USD';
+                const orderSymbol = currencyRates[orderCurrency].symbol;
+                const orderRate = currencyRates[orderCurrency].rate;
+                
+                let details = `Order ID: ${order.id}\nDate: ${new Date(order.date).toLocaleString()}\nStatus: ${order.status}\nCurrency: ${orderCurrency}\n\nItems:\n`;
                 
                 order.items.forEach(item => {
-                    details += `- ${item.name} (Qty: ${item.quantity}) - $${item.price.toFixed(2)} each\n`;
+                    const convertedPrice = (item.price * orderRate).toFixed(2);
+                    details += `- ${item.name} (Qty: ${item.quantity}) - ${orderSymbol}${convertedPrice} each\n`;
                 });
                 
-                details += `\nTotal: $${order.total.toFixed(2)}`;
+                const convertedTotal = (order.total * orderRate).toFixed(2);
+                details += `\nTotal: ${orderSymbol}${convertedTotal}`;
                 
                 alert(details);
             }
