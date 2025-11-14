@@ -193,7 +193,9 @@
         .product-image {
             height: 200px;
             width: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            padding: 10px;
+            background: #f8f9fa;
         }
 
         .product-info {
@@ -266,9 +268,11 @@
         .cart-item-image {
             width: 80px;
             height: 80px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 4px;
             margin-right: 15px;
+            background: #f8f9fa;
+            padding: 5px;
         }
 
         .cart-item-details {
@@ -334,6 +338,87 @@
             display: block;
         }
 
+        /* Product Modal */
+        .product-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .modal-image {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .modal-details {
+            flex: 2;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .modal-price {
+            font-size: 1.8rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .modal-description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
         /* Footer */
         footer {
             background: var(--dark);
@@ -380,6 +465,13 @@
             color: #aaa;
         }
 
+        .powered-by {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #ddd;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -402,6 +494,14 @@
 
             .products-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .modal-body {
+                flex-direction: column;
+            }
+
+            .modal-image {
+                max-width: 100%;
             }
         }
     </style>
@@ -466,11 +566,23 @@
             <!-- Cart items will be loaded here -->
         </div>
         <div class="cart-total">
-            Total: $<span id="cartTotal">0.00</span>
+            Total: <span id="currencySymbol">$</span><span id="cartTotal">0.00</span>
         </div>
         <button class="btn btn-primary btn-block" id="checkoutBtn">
             <i class="fas fa-credit-card"></i> Proceed to Checkout
         </button>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="product-modal" id="productModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body" id="modalBody">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -502,10 +614,27 @@
             <div class="copyright">
                 &copy; 2023 GameZone. All rights reserved.
             </div>
+            <div class="powered-by">
+                Powered by MGP Studio
+            </div>
         </div>
     </footer>
 
     <script>
+        // Currency configuration
+        const currencyRates = {
+            'USD': { symbol: '$', rate: 1 },
+            'EUR': { symbol: '€', rate: 0.85 },
+            'GBP': { symbol: '£', rate: 0.73 },
+            'INR': { symbol: '₹', rate: 74.5 },
+            'JPY': { symbol: '¥', rate: 110 }
+        };
+
+        // Get selected currency from localStorage or default to USD
+        let currentCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+        let currencySymbol = currencyRates[currentCurrency].symbol;
+        let conversionRate = currencyRates[currentCurrency].rate;
+
         // Initialize data if not exists
         function initializeData() {
             if (!localStorage.getItem('products')) {
@@ -513,30 +642,38 @@
                     {
                         id: 1,
                         name: "Gaming Keyboard",
-                        description: "Mechanical RGB gaming keyboard with customizable keys",
+                        description: "Mechanical RGB gaming keyboard with customizable keys and anti-ghosting technology. Perfect for competitive gaming with responsive switches and durable construction.",
                         price: 89.99,
-                        image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                        image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                        category: "Accessories",
+                        features: ["RGB Backlight", "Mechanical Switches", "Anti-ghosting", "Wrist Rest"]
                     },
                     {
                         id: 2,
                         name: "Wireless Gaming Mouse",
-                        description: "High-precision wireless gaming mouse with adjustable DPI",
+                        description: "High-precision wireless gaming mouse with adjustable DPI up to 16000. Features ergonomic design, long battery life, and customizable buttons for optimal gaming performance.",
                         price: 59.99,
-                        image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2067&q=80"
+                        image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                        category: "Accessories",
+                        features: ["Wireless", "Adjustable DPI", "Ergonomic", "Long Battery"]
                     },
                     {
                         id: 3,
                         name: "Gaming Headset",
-                        description: "Surround sound gaming headset with noise cancellation",
+                        description: "Surround sound gaming headset with active noise cancellation. Features comfortable memory foam ear cushions, retractable microphone, and immersive 7.1 surround sound.",
                         price: 79.99,
-                        image: "https://images.unsplash.com/photo-1599669454699-248893623440?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                        image: "https://images.unsplash.com/photo-1599669454699-248893623440?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                        category: "Audio",
+                        features: ["Noise Cancellation", "Surround Sound", "Memory Foam", "Retractable Mic"]
                     },
                     {
                         id: 4,
                         name: "Gaming Monitor",
-                        description: "27-inch 144Hz gaming monitor with 1ms response time",
+                        description: "27-inch 144Hz gaming monitor with 1ms response time. Features IPS panel for accurate colors, AMD FreeSync technology, and adjustable stand for comfortable viewing.",
                         price: 299.99,
-                        image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                        image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                        category: "Displays",
+                        features: ["144Hz Refresh", "1ms Response", "IPS Panel", "AMD FreeSync"]
                     }
                 ];
                 localStorage.setItem('products', JSON.stringify(defaultProducts));
@@ -551,6 +688,11 @@
             }
         }
 
+        // Convert price based on selected currency
+        function convertPrice(price) {
+            return (price * conversionRate).toFixed(2);
+        }
+
         // Load products from localStorage
         function loadProducts() {
             const products = JSON.parse(localStorage.getItem('products'));
@@ -559,17 +701,22 @@
             productsGrid.innerHTML = '';
             
             products.forEach(product => {
+                const convertedPrice = convertPrice(product.price);
+                
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.innerHTML = `
                     <img src="${product.image}" alt="${product.name}" class="product-image">
                     <div class="product-info">
                         <h3 class="product-title">${product.name}</h3>
-                        <p class="product-description">${product.description}</p>
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <p class="product-description">${product.description.substring(0, 100)}...</p>
+                        <div class="product-price">${currencySymbol}${convertedPrice}</div>
                         <div class="product-actions">
-                            <button class="btn btn-primary" onclick="addToCart(${product.id})">
-                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            <button class="btn btn-outline" onclick="viewProduct(${product.id})">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-primary" onclick="buyNow(${product.id})">
+                                <i class="fas fa-bolt"></i> Buy Now
                             </button>
                         </div>
                     </div>
@@ -578,19 +725,46 @@
             });
         }
 
-        // Cart functionality
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-        function updateCartCount() {
-            const cartCount = document.getElementById('cartCount');
-            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-            cartCount.textContent = totalItems;
+        // View product details
+        function viewProduct(productId) {
+            const products = JSON.parse(localStorage.getItem('products'));
+            const product = products.find(p => p.id === productId);
+            const convertedPrice = convertPrice(product.price);
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-image">
+                    <img src="${product.image}" alt="${product.name}">
+                </div>
+                <div class="modal-details">
+                    <h2 class="modal-title">${product.name}</h2>
+                    <div class="modal-price">${currencySymbol}${convertedPrice}</div>
+                    <p class="modal-description">${product.description}</p>
+                    <div class="form-group">
+                        <strong>Category:</strong> ${product.category || 'Gaming Accessories'}
+                    </div>
+                    <div class="form-group">
+                        <strong>Features:</strong>
+                        <ul>
+                            ${(product.features || ['High Quality', 'Durable', 'Premium Build']).map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary" onclick="buyNow(${product.id})">
+                        <i class="fas fa-bolt"></i> Buy Now
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('productModal').classList.add('active');
         }
 
-        function addToCart(productId) {
+        // Buy Now function
+        function buyNow(productId) {
             const products = JSON.parse(localStorage.getItem('products'));
             const product = products.find(p => p.id === productId);
             
+            // Add to cart
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
             const existingItem = cart.find(item => item.id === productId);
             
             if (existingItem) {
@@ -607,7 +781,23 @@
             
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
+            
+            // Close modal if open
+            document.getElementById('productModal').classList.remove('active');
+            
+            // Open cart
+            openCart();
+            
             showNotification(`${product.name} added to cart!`);
+        }
+
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function updateCartCount() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = totalItems;
         }
 
         function showNotification(message) {
@@ -641,7 +831,9 @@
         function loadCart() {
             const cartItems = document.getElementById('cartItems');
             const cartTotal = document.getElementById('cartTotal');
+            const currencySymbolElement = document.getElementById('currencySymbol');
             
+            currencySymbolElement.textContent = currencySymbol;
             cartItems.innerHTML = '';
             
             let total = 0;
@@ -649,6 +841,8 @@
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 total += itemTotal;
+                const convertedPrice = convertPrice(item.price);
+                const convertedItemTotal = convertPrice(itemTotal);
                 
                 const cartItem = document.createElement('div');
                 cartItem.className = 'cart-item';
@@ -656,7 +850,7 @@
                     <img src="${item.image}" alt="${item.name}" class="cart-item-image">
                     <div class="cart-item-details">
                         <div class="cart-item-title">${item.name}</div>
-                        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                        <div class="cart-item-price">${currencySymbol}${convertedPrice}</div>
                         <div class="cart-item-quantity">
                             <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
                             <input type="text" class="quantity-input" value="${item.quantity}" readonly>
@@ -670,7 +864,8 @@
                 cartItems.appendChild(cartItem);
             });
             
-            cartTotal.textContent = total.toFixed(2);
+            const convertedTotal = convertPrice(total);
+            cartTotal.textContent = convertedTotal;
         }
 
         function updateQuantity(productId, newQuantity) {
@@ -716,7 +911,8 @@
                 items: [...cart],
                 total: cart.reduce((total, item) => total + (item.price * item.quantity), 0),
                 date: new Date().toISOString(),
-                status: 'pending'
+                status: 'pending',
+                currency: currentCurrency
             };
             
             orders.push(newOrder);
@@ -742,6 +938,11 @@
             document.getElementById('overlay').classList.remove('active');
         }
 
+        // Close modal
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
             initializeData();
@@ -753,6 +954,12 @@
             document.getElementById('closeCart').addEventListener('click', closeCart);
             document.getElementById('overlay').addEventListener('click', closeCart);
             document.getElementById('checkoutBtn').addEventListener('click', checkout);
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('productModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
         });
     </script>
 </body>
