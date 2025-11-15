@@ -532,10 +532,10 @@
                         <label>Product Image</label>
                         <div class="image-upload-container">
                             <div class="upload-options">
-                                <button type="button" class="btn btn-outline" onclick="document.getElementById('imageUrlInput').style.display='block'; document.getElementById('imageUploadBox').style.display='none'">
+                                <button type="button" class="btn btn-outline" onclick="showImageUrlInput()">
                                     <i class="fas fa-link"></i> Use Image URL
                                 </button>
-                                <button type="button" class="btn btn-outline" onclick="document.getElementById('imageUploadBox').style.display='block'; document.getElementById('imageUrlInput').style.display='none'">
+                                <button type="button" class="btn btn-outline" onclick="showImageUploadBox()">
                                     <i class="fas fa-upload"></i> Upload Image
                                 </button>
                             </div>
@@ -1175,7 +1175,6 @@
         function initializeImageUpload() {
             const imageUploadBox = document.getElementById('imageUploadBox');
             const imageFileInput = document.getElementById('imageFileInput');
-            const imagePreview = document.getElementById('imagePreview');
             
             // Handle drag and drop
             imageUploadBox.addEventListener('dragover', function(e) {
@@ -1211,9 +1210,11 @@
         
         // Handle image upload
         function handleImageUpload(file) {
+            console.log("Starting image upload...", file);
+            
             // Check if file is an image
             if (!file.type.match('image.*')) {
-                showAlert('Please select an image file', 'danger');
+                showAlert('Please select an image file (JPEG, PNG, GIF)', 'danger');
                 return;
             }
             
@@ -1226,33 +1227,52 @@
             // Show uploading message
             showAlert('Uploading image...', 'success');
             
-            // Create a reference to the storage location
-            const storageRef = storage.ref();
-            const imageRef = storageRef.child('product-images/' + Date.now() + '-' + file.name);
-            
-            // Upload the file
-            const uploadTask = imageRef.put(file);
-            
-            uploadTask.on('state_changed',
-                function(snapshot) {
-                    // Progress monitoring could be added here
-                },
-                function(error) {
-                    showAlert('Error uploading image: ' + error.message, 'danger');
-                },
-                function() {
-                    // Upload completed successfully
-                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                        // Add the image URL to our array
-                        uploadedImages.push(downloadURL);
-                        
-                        // Update the preview
-                        updateImagePreview();
-                        
-                        showAlert('Image uploaded successfully!', 'success');
-                    });
-                }
-            );
+            try {
+                // Create a reference to the storage location
+                const storageRef = storage.ref();
+                const fileName = 'product-images/' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                const imageRef = storageRef.child(fileName);
+                
+                console.log("Uploading to:", fileName);
+                
+                // Upload the file
+                const uploadTask = imageRef.put(file);
+                
+                uploadTask.on('state_changed',
+                    function(snapshot) {
+                        // Progress monitoring
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    },
+                    function(error) {
+                        console.error("Upload error:", error);
+                        showAlert('Error uploading image: ' + error.message, 'danger');
+                    },
+                    function() {
+                        // Upload completed successfully
+                        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                            console.log("File available at:", downloadURL);
+                            
+                            // Add the image URL to our array
+                            uploadedImages.push(downloadURL);
+                            
+                            // Update the preview
+                            updateImagePreview();
+                            
+                            // Auto-fill the image URL field
+                            document.getElementById('productImage').value = downloadURL;
+                            
+                            showAlert('Image uploaded successfully!', 'success');
+                        }).catch(error => {
+                            console.error("Error getting download URL:", error);
+                            showAlert('Error getting image URL!', 'danger');
+                        });
+                    }
+                );
+            } catch (error) {
+                console.error("Upload exception:", error);
+                showAlert('Error uploading image!', 'danger');
+            }
         }
         
         // Update image preview
@@ -1279,6 +1299,20 @@
         function removeImage(index) {
             uploadedImages.splice(index, 1);
             updateImagePreview();
+        }
+
+        // Show image URL input
+        function showImageUrlInput() {
+            document.getElementById('imageUrlInput').style.display = 'block';
+            document.getElementById('imageUploadBox').style.display = 'none';
+            document.getElementById('productImage').value = '';
+        }
+
+        // Show image upload box
+        function showImageUploadBox() {
+            document.getElementById('imageUploadBox').style.display = 'block';
+            document.getElementById('imageUrlInput').style.display = 'none';
+            document.getElementById('productImage').value = '';
         }
 
         // Initialize the page
