@@ -303,11 +303,12 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            background: #f8f9fa;
         }
 
         .image-upload-box:hover {
             border-color: var(--secondary);
-            background-color: #f8f9fa;
+            background-color: #e3f2fd;
         }
 
         .image-upload-box i {
@@ -335,6 +336,7 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 2px solid #ddd;
         }
 
         .image-preview-item img {
@@ -347,7 +349,7 @@
             position: absolute;
             top: 5px;
             right: 5px;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.9);
             border: none;
             border-radius: 50%;
             width: 25px;
@@ -358,12 +360,30 @@
             cursor: pointer;
             font-size: 0.8rem;
             color: var(--accent);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .upload-options {
             display: flex;
             gap: 10px;
             margin-top: 10px;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.3s;
         }
 
         /* Responsive */
@@ -402,11 +422,11 @@
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" class="form-control" placeholder="Enter your email" value="elitegamer859650@gmail.com">
+            <input type="email" id="email" class="form-control" placeholder="Enter your email">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" class="form-control" placeholder="Enter your password" value="acer4321234@">
+            <input type="password" id="password" class="form-control" placeholder="Enter your password">
         </div>
         <button class="btn btn-primary btn-block" onclick="login()">
             <i class="fas fa-sign-in-alt"></i> Login
@@ -479,8 +499,8 @@
                             <th>ID</th>
                             <th>Image</th>
                             <th>Name</th>
-                            <th>Description</th>
                             <th>Price</th>
+                            <th>Product URL</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -553,6 +573,9 @@
                                 <button type="button" class="btn btn-primary" onclick="document.getElementById('imageFileInput').click()">
                                     <i class="fas fa-folder-open"></i> Browse Files
                                 </button>
+                                <div class="upload-progress" id="uploadProgress">
+                                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                                </div>
                             </div>
                             
                             <!-- Image Preview -->
@@ -569,8 +592,9 @@
                         <input type="text" id="productFeatures" class="form-control" placeholder="High Quality, Durable, Premium Build">
                     </div>
                     <div class="form-group">
-                        <label for="productUrl">Product URL (External Link)</label>
-                        <input type="url" id="productUrl" class="form-control" placeholder="https://example.com/product-page">
+                        <label for="productUrl">Product Page URL (Where users will be redirected when clicking Buy)</label>
+                        <input type="url" id="productUrl" class="form-control" placeholder="https://example.com/product-page" required>
+                        <small style="color: #666; font-size: 12px;">This is the external link where customers will be redirected when they click the Buy button</small>
                     </div>
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-plus"></i> Add Product
@@ -609,8 +633,9 @@
                             <input type="text" id="editProductFeatures" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="editProductUrl">Product URL (External Link)</label>
-                            <input type="url" id="editProductUrl" class="form-control">
+                            <label for="editProductUrl">Product Page URL</label>
+                            <input type="url" id="editProductUrl" class="form-control" required>
+                            <small style="color: #666; font-size: 12px;">External link for Buy button</small>
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <button type="submit" class="btn btn-success">
@@ -861,10 +886,17 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${product.id}</td>
-                        <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; padding: 5px;"></td>
+                        <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; padding: 5px; border-radius: 4px;"></td>
                         <td>${product.name}</td>
-                        <td>${product.description ? product.description.substring(0, 80) + '...' : 'No description'}</td>
                         <td>${currencySymbol}${convertedPrice}</td>
+                        <td>
+                            ${product.productUrl ? 
+                                `<a href="${product.productUrl}" target="_blank" style="color: var(--secondary); text-decoration: none; font-size: 12px;">
+                                    <i class="fas fa-external-link-alt"></i> View URL
+                                </a>` : 
+                                '<span style="color: #999; font-size: 12px;">No URL</span>'
+                            }
+                        </td>
                         <td>
                             <button class="btn btn-warning" onclick="editProduct(${product.id})">
                                 <i class="fas fa-edit"></i> Edit
@@ -1034,6 +1066,12 @@
                 return;
             }
             
+            // Validate product URL
+            if (!productUrl) {
+                showAlert('Please provide a product page URL for the Buy button', 'danger');
+                return;
+            }
+            
             database.ref('products').once('value').then(snapshot => {
                 const products = snapshot.val() || [];
                 const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
@@ -1180,19 +1218,19 @@
             imageUploadBox.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 this.style.borderColor = 'var(--secondary)';
-                this.style.backgroundColor = '#f0f8ff';
+                this.style.backgroundColor = '#e3f2fd';
             });
             
             imageUploadBox.addEventListener('dragleave', function(e) {
                 e.preventDefault();
                 this.style.borderColor = '#ddd';
-                this.style.backgroundColor = '';
+                this.style.backgroundColor = '#f8f9fa';
             });
             
             imageUploadBox.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.style.borderColor = '#ddd';
-                this.style.backgroundColor = '';
+                this.style.backgroundColor = '#f8f9fa';
                 
                 const files = e.dataTransfer.files;
                 if (files.length > 0) {
@@ -1224,8 +1262,12 @@
                 return;
             }
             
-            // Show uploading message
+            // Show uploading message and progress bar
             showAlert('Uploading image...', 'success');
+            const progressBar = document.getElementById('uploadProgress');
+            const progressBarInner = document.getElementById('uploadProgressBar');
+            progressBar.style.display = 'block';
+            progressBarInner.style.width = '0%';
             
             try {
                 // Create a reference to the storage location
@@ -1243,9 +1285,11 @@
                         // Progress monitoring
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         console.log('Upload is ' + progress + '% done');
+                        progressBarInner.style.width = progress + '%';
                     },
                     function(error) {
                         console.error("Upload error:", error);
+                        progressBar.style.display = 'none';
                         showAlert('Error uploading image: ' + error.message, 'danger');
                     },
                     function() {
@@ -1262,15 +1306,20 @@
                             // Auto-fill the image URL field
                             document.getElementById('productImage').value = downloadURL;
                             
+                            // Hide progress bar
+                            progressBar.style.display = 'none';
+                            
                             showAlert('Image uploaded successfully!', 'success');
                         }).catch(error => {
                             console.error("Error getting download URL:", error);
+                            progressBar.style.display = 'none';
                             showAlert('Error getting image URL!', 'danger');
                         });
                     }
                 );
             } catch (error) {
                 console.error("Upload exception:", error);
+                progressBar.style.display = 'none';
                 showAlert('Error uploading image!', 'danger');
             }
         }
@@ -1299,6 +1348,10 @@
         function removeImage(index) {
             uploadedImages.splice(index, 1);
             updateImagePreview();
+            // Clear the image URL field if no images left
+            if (uploadedImages.length === 0) {
+                document.getElementById('productImage').value = '';
+            }
         }
 
         // Show image URL input
@@ -1306,6 +1359,8 @@
             document.getElementById('imageUrlInput').style.display = 'block';
             document.getElementById('imageUploadBox').style.display = 'none';
             document.getElementById('productImage').value = '';
+            uploadedImages = [];
+            updateImagePreview();
         }
 
         // Show image upload box
@@ -1327,10 +1382,6 @@
                     closeEditModal();
                 }
             });
-            
-            // Pre-fill login form for testing
-            document.getElementById('email').value = ADMIN_EMAIL;
-            document.getElementById('password').value = ADMIN_PASSWORD;
         });
     </script>
 </body>
