@@ -402,11 +402,11 @@
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" class="form-control" placeholder="Enter your email">
+            <input type="email" id="email" class="form-control" placeholder="Enter your email" value="elitegamer859650@gmail.com">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" class="form-control" placeholder="Enter your password">
+            <input type="password" id="password" class="form-control" placeholder="Enter your password" value="acer4321234@">
         </div>
         <button class="btn btn-primary btn-block" onclick="login()">
             <i class="fas fa-sign-in-alt"></i> Login
@@ -688,7 +688,13 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+        
         const database = firebase.database();
         const storage = firebase.storage();
 
@@ -716,6 +722,8 @@
         // Check if user is already logged in
         function checkLogin() {
             const isLoggedIn = localStorage.getItem('adminLoggedIn');
+            console.log("Checking login status:", isLoggedIn);
+            
             if (isLoggedIn === 'true') {
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
@@ -726,10 +734,14 @@
                     if (snapshot.exists()) {
                         document.getElementById('checkoutUrl').value = snapshot.val();
                     }
+                }).catch(error => {
+                    console.error("Error loading checkout URL:", error);
                 });
                 
                 loadProductsTable();
                 loadOrdersTable();
+            } else {
+                console.log("User not logged in, showing login form");
             }
         }
 
@@ -738,6 +750,15 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
+            console.log("Login attempt with:", email);
+            
+            // Simple validation
+            if (!email || !password) {
+                document.getElementById('loginError').textContent = "Please enter both email and password!";
+                document.getElementById('loginError').style.display = 'block';
+                return;
+            }
+            
             if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
                 localStorage.setItem('adminLoggedIn', 'true');
                 document.getElementById('loginForm').style.display = 'none';
@@ -745,17 +766,23 @@
                 document.getElementById('loginError').style.display = 'none';
                 document.getElementById('currencySelect').value = currentCurrency;
                 
+                console.log("Login successful!");
+                
                 // Load checkout URL from Firebase
                 database.ref('settings/checkoutUrl').once('value').then(snapshot => {
                     if (snapshot.exists()) {
                         document.getElementById('checkoutUrl').value = snapshot.val();
                     }
+                }).catch(error => {
+                    console.error("Error loading checkout URL:", error);
                 });
                 
                 loadProductsTable();
                 loadOrdersTable();
             } else {
+                document.getElementById('loginError').textContent = "Invalid email or password!";
                 document.getElementById('loginError').style.display = 'block';
+                console.log("Login failed - invalid credentials");
             }
         }
 
@@ -766,6 +793,7 @@
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
+            document.getElementById('loginError').style.display = 'none';
         }
 
         // Update currency
@@ -822,6 +850,11 @@
                 
                 productsTable.innerHTML = '';
                 
+                if (products.length === 0) {
+                    productsTable.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No products found</td></tr>';
+                    return;
+                }
+                
                 products.forEach(product => {
                     const convertedPrice = convertPrice(product.price);
                     
@@ -830,7 +863,7 @@
                         <td>${product.id}</td>
                         <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; padding: 5px;"></td>
                         <td>${product.name}</td>
-                        <td>${product.description.substring(0, 80)}...</td>
+                        <td>${product.description ? product.description.substring(0, 80) + '...' : 'No description'}</td>
                         <td>${currencySymbol}${convertedPrice}</td>
                         <td>
                             <button class="btn btn-warning" onclick="editProduct(${product.id})">
@@ -843,6 +876,9 @@
                     `;
                     productsTable.appendChild(row);
                 });
+            }).catch(error => {
+                console.error("Error loading products:", error);
+                document.getElementById('productsTable').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: red;">Error loading products</td></tr>';
             });
         }
 
@@ -855,9 +891,9 @@
                 if (product) {
                     document.getElementById('editProductId').value = product.id;
                     document.getElementById('editProductName').value = product.name;
-                    document.getElementById('editProductDescription').value = product.description;
+                    document.getElementById('editProductDescription').value = product.description || '';
                     document.getElementById('editProductPrice').value = product.price;
-                    document.getElementById('editProductImage').value = product.image;
+                    document.getElementById('editProductImage').value = product.image || '';
                     document.getElementById('editProductCategory').value = product.category || '';
                     document.getElementById('editProductFeatures').value = (product.features || []).join(', ');
                     document.getElementById('editProductUrl').value = product.productUrl || '';
@@ -905,6 +941,9 @@
                         loadProductsTable();
                         closeEditModal();
                         showAlert('Product updated successfully!', 'success');
+                    }).catch(error => {
+                        console.error("Error updating product:", error);
+                        showAlert('Error updating product!', 'danger');
                     });
                 }
             });
@@ -926,6 +965,11 @@
                 const ordersTable = document.getElementById('ordersTable');
                 ordersTable.innerHTML = '';
                 
+                if (orders.length === 0) {
+                    ordersTable.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No orders found</td></tr>';
+                    return;
+                }
+                
                 orders.forEach(order => {
                     const orderCurrency = order.currency || 'USD';
                     const orderSymbol = currencyRates[orderCurrency].symbol;
@@ -936,7 +980,7 @@
                     row.innerHTML = `
                         <td>${order.id}</td>
                         <td>${new Date(order.date).toLocaleDateString()}</td>
-                        <td>${order.items.length} items</td>
+                        <td>${order.items ? order.items.length : 0} items</td>
                         <td>${orderSymbol}${convertedTotal}</td>
                         <td>
                             <select onchange="updateOrderStatus('${order.firebaseKey}', this.value)">
@@ -958,6 +1002,9 @@
                     `;
                     ordersTable.appendChild(row);
                 });
+            }).catch(error => {
+                console.error("Error loading orders:", error);
+                document.getElementById('ordersTable').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: red;">Error loading orders</td></tr>';
             });
         }
 
@@ -1017,6 +1064,9 @@
                     
                     // Switch to products section
                     showSection('products');
+                }).catch(error => {
+                    console.error("Error adding product:", error);
+                    showAlert('Error adding product!', 'danger');
                 });
             });
         });
@@ -1030,6 +1080,9 @@
                     database.ref('products').set(products).then(() => {
                         loadProductsTable();
                         showAlert('Product deleted successfully!', 'success');
+                    }).catch(error => {
+                        console.error("Error deleting product:", error);
+                        showAlert('Error deleting product!', 'danger');
                     });
                 });
             }
@@ -1041,6 +1094,9 @@
                 status: newStatus
             }).then(() => {
                 showAlert('Order status updated!', 'success');
+            }).catch(error => {
+                console.error("Error updating order status:", error);
+                showAlert('Error updating order status!', 'danger');
             });
         }
 
@@ -1056,10 +1112,14 @@
                     
                     let details = `Order ID: ${order.id}\nDate: ${new Date(order.date).toLocaleString()}\nStatus: ${order.status}\nCurrency: ${orderCurrency}\n\nItems:\n`;
                     
-                    order.items.forEach(item => {
-                        const convertedPrice = (item.price * orderRate).toFixed(2);
-                        details += `- ${item.name} (Qty: ${item.quantity}) - ${orderSymbol}${convertedPrice} each\n`;
-                    });
+                    if (order.items && order.items.length > 0) {
+                        order.items.forEach(item => {
+                            const convertedPrice = (item.price * orderRate).toFixed(2);
+                            details += `- ${item.name} (Qty: ${item.quantity}) - ${orderSymbol}${convertedPrice} each\n`;
+                        });
+                    } else {
+                        details += "- No items\n";
+                    }
                     
                     const convertedTotal = (order.total * orderRate).toFixed(2);
                     details += `\nTotal: ${orderSymbol}${convertedTotal}`;
@@ -1075,6 +1135,9 @@
                 database.ref('orders/' + orderKey).remove().then(() => {
                     loadOrdersTable();
                     showAlert('Order deleted successfully!', 'success');
+                }).catch(error => {
+                    console.error("Error deleting order:", error);
+                    showAlert('Error deleting order!', 'danger');
                 });
             }
         }
@@ -1085,6 +1148,9 @@
             if (url) {
                 database.ref('settings/checkoutUrl').set(url).then(() => {
                     showAlert('Checkout URL saved successfully!', 'success');
+                }).catch(error => {
+                    console.error("Error saving checkout URL:", error);
+                    showAlert('Error saving checkout URL!', 'danger');
                 });
             } else {
                 showAlert('Please enter a valid URL', 'danger');
@@ -1114,7 +1180,7 @@
             // Handle drag and drop
             imageUploadBox.addEventListener('dragover', function(e) {
                 e.preventDefault();
-                this.style.borderColor = var(--secondary);
+                this.style.borderColor = 'var(--secondary)';
                 this.style.backgroundColor = '#f0f8ff';
             });
             
@@ -1217,6 +1283,7 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded, initializing admin panel...");
             checkLogin();
             initializeImageUpload();
             
@@ -1226,6 +1293,10 @@
                     closeEditModal();
                 }
             });
+            
+            // Pre-fill login form for testing
+            document.getElementById('email').value = ADMIN_EMAIL;
+            document.getElementById('password').value = ADMIN_PASSWORD;
         });
     </script>
 </body>
