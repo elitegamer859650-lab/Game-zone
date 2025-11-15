@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spark - Premium Gadgets Store (Powered by Firebase)</title>
+    <title>Spark - Premium Gadgets Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="//webfonts.zoho.com/css?family=Poppins:400,500,600,700/Montserrat:700/Lora:400&display=swap">
     <style>
-        /* BASE STYLES - Matched to Spark Template */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
-            color: #1a1a1a; /* Default text color */
         }
 
         :root {
             --primary-dark: #212121;
-            --secondary-accent: #FFCD6C; /* Gold/Yellow accent */
+            --secondary-accent: #FFCD6C;
             --link-blue: #298BFF;
             --body-bg: #f5f7fa;
             --card-bg: #FAFAFA;
@@ -29,19 +27,66 @@
         body {
             background-color: var(--body-bg);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 100px; /* Matched to template's wide padding */
+            padding: 0 100px;
         }
+
         @media (max-width: 991px) {
             .container { padding: 0 24px; }
         }
 
-        /* HEADER & NAVIGATION */
+        /* Snow Effect */
+        .snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        /* 11.11 Sale Banner */
+        .sale-banner {
+            background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff0080);
+            background-size: 1800% 1800%;
+            animation: rainbow 3s ease infinite;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: relative;
+            z-index: 100;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+
+        /* Header */
         header {
             background-color: var(--primary-dark);
             color: var(--text-light);
@@ -87,7 +132,7 @@
             align-items: center;
         }
 
-        /* BUTTONS (Matching Spark's primary style) */
+        /* Buttons */
         .btn {
             padding: 12px 24px;
             border-radius: 8px;
@@ -111,24 +156,48 @@
             background-color: #ffc14b; 
         }
 
-        /* Hero Section (Simulating Spark Banner 15) */
+        /* Hero Slideshow */
         .hero {
-            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-01.webp?storefront_domain=sparkgadgets-demo.zohoecommerce.com');
+            position: relative;
+            height: 723px;
+            overflow: hidden;
+        }
+
+        .slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-size: cover;
             background-position: center;
-            padding: 100px 0;
-            color: var(--text-light);
-            min-height: 723px;
-            display: flex;
-            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
         }
 
         .hero-content {
+            position: relative;
+            z-index: 2;
             max-width: 50%;
+            padding: 100px 0;
+            color: var(--text-light);
         }
+
         @media (max-width: 767px) {
             .hero-content { max-width: 100%; }
-            .hero { min-height: 400px; padding: 50px 0; }
+            .hero { height: 400px; }
         }
 
         .hero p.pre-title {
@@ -149,7 +218,7 @@
             color: var(--secondary-accent);
         }
 
-        /* CATEGORY GRID (Matching Spark's Category section) */
+        /* Categories */
         .section-title {
             font-family: 'Montserrat', sans-serif;
             font-size: 30px;
@@ -158,6 +227,7 @@
             margin: 50px 0 30px;
             padding-top: 40px;
         }
+
         @media (max-width: 767px) {
              .section-title { font-size: 16px; line-height: 24px; padding-top: 20px; }
         }
@@ -169,6 +239,7 @@
             padding-bottom: 40px;
             text-align: center;
         }
+
         @media (max-width: 767px) {
             .category-grid { grid-template-columns: repeat(4, 1fr); padding-bottom: 20px; }
         }
@@ -198,7 +269,7 @@
             white-space: nowrap;
         }
 
-        /* PRODUCT GRID (Matching Spark's Product List 06 Style) */
+        /* Products */
         .products-header {
             display: flex;
             justify-content: space-between;
@@ -219,6 +290,7 @@
             margin-bottom: 50px;
             padding-top: 20px;
         }
+
         @media (max-width: 767px) {
             .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding-top: 12px; }
         }
@@ -238,7 +310,7 @@
 
         .product-image-area {
             position: relative;
-            background: #fff; /* White background for product image area */
+            background: #fff;
         }
         .product-image {
             height: 200px;
@@ -291,12 +363,13 @@
             text-transform: none;
         }
 
-        /* Footer (Matching Spark's dark style) */
+        /* Footer */
         footer {
             background: var(--primary-dark);
             color: #ccc;
             padding: 80px 0 20px;
         }
+
         @media (max-width: 767px) {
              footer { padding: 40px 0 20px; }
         }
@@ -346,22 +419,14 @@
             color: #999;
         }
 
-        /* Utility Styles */
-        .text-accent { color: var(--secondary-accent); }
-        .text-white { color: var(--text-light); }
-        .text-dark { color: var(--text-dark); }
-        .text-link { color: var(--link-blue); }
-        .text-link:hover { text-decoration: underline; }
-        .text-uppercase { text-transform: uppercase; }
-
-        /* Cart Sidebar & Modal Styles (Keep existing functionality, adapt colors) */
+        /* Cart Sidebar */
         .cart-sidebar {
             position: fixed;
             top: 0;
             right: -400px;
             width: 380px;
             height: 100vh;
-            background: var(--card-bg); /* Use light background for cart */
+            background: var(--card-bg);
             box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
             transition: right 0.3s;
             z-index: 1000;
@@ -393,7 +458,7 @@
             border-top: 1px solid #eee;
         }
         
-        /* Cart item styles */
+        /* Cart items */
         .cart-item {
             display: flex;
             align-items: center;
@@ -606,11 +671,6 @@
             line-height: 1.6;
         }
         
-        /* Notification style adjustment */
-        .notification {
-            background: #008805; /* Use a friendly success color */
-        }
-        
         /* Overlay */
         .overlay {
             display: none;
@@ -626,9 +686,48 @@
         .overlay.active {
             display: block;
         }
+
+        /* WhatsApp Button */
+        .whatsapp-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+
+        .whatsapp-button:hover {
+            transform: scale(1.1);
+        }
+
+        .whatsapp-button i {
+            color: white;
+            font-size: 30px;
+        }
     </style>
 </head>
 <body>
+    <!-- Snow Effect -->
+    <div class="snow" id="snow"></div>
+
+    <!-- 11.11 Sale Banner -->
+    <div class="sale-banner">
+        🎉 11.11 SALE - UP TO 70% OFF! 🎉
+    </div>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/923096602143" class="whatsapp-button" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <header>
         <div class="container header-content">
             <div class="logo">
@@ -652,11 +751,17 @@
         </div>
     </header>
 
+    <!-- Hero Section with Slideshow -->
     <section class="hero">
+        <div class="slideshow">
+            <div class="slide active" style="background-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="slide" style="background-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="slide" style="background-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+        </div>
         <div class="container hero-content">
             <p class="pre-title text-accent">Special Discount</p>
-            <h1>CHOOSE SPARK CHOOSE SAVINGS! UPTO <span class="text-accent">20% OFF</span></h1>
-            <p class="text-white" style="font-weight: 400;">1.85” AMOLED Display | Premium Metal Build</p>
+            <h1>CHOOSE SPARK CHOOSE SAVINGS! UPTO <span class="text-accent">70% OFF</span></h1>
+            <p class="text-white" style="font-weight: 400;">Premium Gadgets | Fast Shipping | 24/7 Support</p>
             <button class="btn btn-primary" onclick="document.getElementById('products').scrollIntoView({ behavior: 'smooth' });">
                 Shop Now
             </button>
@@ -667,14 +772,14 @@
         <div class="container">
             <h2 class="section-title text-dark">Shop by Categories</h2>
             <div class="category-grid">
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-06.webp" alt="Headphones"><p class="text-dark">Headphones</p></a></div>
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-14.webp" alt="Earbuds"><p class="text-dark">Earbuds</p></a></div>
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-07.webp" alt="Power Banks"><p class="text-dark">Power Banks</p></a></div>
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-08.webp" alt="Laptops"><p class="text-dark">Laptops</p></a></div>
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-09.webp" alt="Fitness Bands"><p class="text-dark">Fitness Bands</p></a></div>
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-10.webp" alt="Speaker"><p class="text-dark">Speaker</p></a></div>
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-11.webp" alt="Charges"><p class="text-dark">Charges</p></a></div>
-                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-12.webp" alt="Security Cam"><p class="text-dark">Security Cam</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2948/2948008.png" alt="Smartphones"><p class="text-dark">Smartphones</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2977/2977385.png" alt="Laptops"><p class="text-dark">Laptops</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2977/2977428.png" alt="Headphones"><p class="text-dark">Headphones</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2977/2977335.png" alt="Smartwatches"><p class="text-dark">Smartwatches</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2977/2977355.png" alt="Cameras"><p class="text-dark">Cameras</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2977/2977379.png" alt="Gaming"><p class="text-dark">Gaming</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2977/2977409.png" alt="Tablets"><p class="text-dark">Tablets</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn-icons-png.flaticon.com/512/2977/2977418.png" alt="Accessories"><p class="text-dark">Accessories</p></a></div>
             </div>
         </div>
     </section>
@@ -693,11 +798,11 @@
 
     <section>
         <div class="container">
-             <div style="background-image:linear-gradient(to left, rgba(0,0,0,0.5), #000000d1), url('https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-17.webp?storefront_domain=sparkgadgets-demo.zohoecommerce.com'); background-size: cover; background-position: center; border-radius: 16px; padding: 70px 56px; margin-bottom: 40px;">
-                <p class="text-white" style="font-size: 16px; line-height: 30px;">Turn Down</p>
-                <h2 class="text-accent" style="font-family:'Montserrat', sans-serif; font-size: 32px; font-weight: 700; line-height: 38px; margin-bottom: 5px;">The Chaos,</h2>
+             <div style="background-image:linear-gradient(to left, rgba(0,0,0,0.5), #000000d1), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; border-radius: 16px; padding: 70px 56px; margin-bottom: 40px;">
+                <p class="text-white" style="font-size: 16px; line-height: 30px;">Limited Time Offer</p>
+                <h2 class="text-accent" style="font-family:'Montserrat', sans-serif; font-size: 32px; font-weight: 700; line-height: 38px; margin-bottom: 5px;">Gaming Revolution</h2>
                 <div style="width: 60px; height: 1px; background-color: #fff; margin-bottom: 10px;"></div>
-                <p class="text-white" style="font-size: 14px;">Turn Up The Productivity</p>
+                <p class="text-white" style="font-size: 14px;">Experience Next Level Gaming with Our Premium Collection</p>
                 <button class="btn btn-primary" style="margin-top: 16px;">Shop Now</button>
             </div>
         </div>
@@ -837,33 +942,95 @@
             'JPY': { symbol: '¥', rate: 110 }
         };
 
-        // Get selected currency from localStorage or default to USD
         let currentCurrency = localStorage.getItem('selectedCurrency') || 'USD';
         let currencySymbol = currencyRates[currentCurrency].symbol;
         let conversionRate = currencyRates[currentCurrency].rate;
-
-        // Get checkout URL from Firebase or default
         let checkoutUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
-
-        // Cart array
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-        // --- CORE FUNCTIONS ---
-        
-        // Convert price based on selected currency
+        // Snow Effect
+        function createSnow() {
+            const snowContainer = document.getElementById('snow');
+            const snowflakes = ['❄', '❅', '❆', '•'];
+            
+            for (let i = 0; i < 100; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+                snowflake.style.opacity = Math.random();
+                snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                snowContainer.appendChild(snowflake);
+                
+                setTimeout(() => {
+                    snowflake.remove();
+                }, 5000);
+            }
+        }
+
+        // Auto-slideshow
+        function startSlideshow() {
+            const slides = document.querySelectorAll('.slide');
+            let currentSlide = 0;
+            
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 5000);
+        }
+
+        // Convert price
         function convertPrice(price) {
             return (price * conversionRate).toFixed(2);
         }
 
-        // Initialize data if not exists
+        // Initialize data
         function initializeData() {
             database.ref('products').once('value').then(snapshot => {
                 if (!snapshot.exists()) {
                     const defaultProducts = [
-                        { id: 1, name: "AeroPods X2", description: "Premium wireless earbuds with noise cancellation.", price: 699.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-01.webp/5731947000000146101/400x400", category: "Audio", features: ["Noise Cancellation", "10h Playtime"] },
-                        { id: 2, name: "BassWave Pro", description: "Powerful portable Bluetooth speaker with deep bass.", price: 4999.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-02.webp/5731947000000146155/400x400", category: "Audio", features: ["Waterproof", "24h Battery"] },
-                        { id: 3, name: "Casio Men's Watch", description: "Classic analog watch with leather strap.", price: 2000.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-06.webp/5731947000000146841/400x400", category: "Timepieces", features: ["Analog", "Water Resistant"] },
-                        { id: 4, name: "DeepSea Pro", description: "Rugged smart watch built for adventure.", price: 1000.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-08.webp/5731947000000146315/400x400", category: "Wearables", features: ["GPS", "Heart Rate Monitor"] }
+                        { 
+                            id: 1, 
+                            name: "iPhone 14 Pro", 
+                            description: "Latest Apple iPhone with advanced camera and A16 chip.", 
+                            price: 999.00, 
+                            image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", 
+                            category: "Smartphones", 
+                            features: ["A16 Bionic Chip", "48MP Camera", "Dynamic Island"],
+                            productUrl: "https://www.apple.com/iphone-14-pro/"
+                        },
+                        { 
+                            id: 2, 
+                            name: "MacBook Pro M2", 
+                            description: "Powerful laptop for professionals and creatives.", 
+                            price: 1999.00, 
+                            image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", 
+                            category: "Laptops", 
+                            features: ["M2 Chip", "16GB RAM", "1TB SSD"],
+                            productUrl: "https://www.apple.com/macbook-pro/"
+                        },
+                        { 
+                            id: 3, 
+                            name: "Sony WH-1000XM4", 
+                            description: "Industry-leading noise canceling wireless headphones.", 
+                            price: 349.00, 
+                            image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", 
+                            category: "Headphones", 
+                            features: ["Noise Canceling", "30h Battery", "Touch Controls"],
+                            productUrl: "https://www.sony.com/electronics/headband-headphones/wh-1000xm4"
+                        },
+                        { 
+                            id: 4, 
+                            name: "Apple Watch Series 8", 
+                            description: "Advanced health monitoring and fitness tracking.", 
+                            price: 399.00, 
+                            image: "https://images.unsplash.com/photo-1579586337278-3f4c82640f32?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80", 
+                            category: "Smartwatches", 
+                            features: ["Health Monitoring", "GPS", "Water Resistant"],
+                            productUrl: "https://www.apple.com/apple-watch-series-8/"
+                        }
                     ];
                     database.ref('products').set(defaultProducts);
                 }
@@ -874,7 +1041,7 @@
             }
         }
 
-        // Load products from Firebase
+        // Load products
         function loadProducts() {
             database.ref('products').on('value', snapshot => {
                 const products = snapshot.val() || [];
@@ -883,37 +1050,31 @@
                 
                 products.forEach(product => {
                     const convertedPrice = convertPrice(product.price);
-                    
-                    // Check for old price for Sale ribbon effect
-                    const oldPrice = product.price > 1000 ? (product.price * 1.1).toFixed(2) : null;
+                    const oldPrice = product.price > 1000 ? (product.price * 1.2).toFixed(2) : null;
                     const convertedOldPrice = oldPrice ? convertPrice(oldPrice) : null;
 
                     const productCard = document.createElement('div');
                     productCard.className = 'product-card';
                     productCard.innerHTML = `
-                        <div class="theme-prod-box theme-product-list-style-06">
-                            <div class="theme-product-box-content">
-                                <div class="product-image-area">
-                                    ${convertedOldPrice ? '<div class="theme-product-sale-ribbon" style="position: absolute; top: 10px; left: 10px; background: #e81816; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px;"> Sale </div>' : ''}
-                                    <a href="javascript:void(0);" onclick="viewProduct(${product.id})">
-                                        <img src="${product.image}" alt="${product.name}" class="product-image">
-                                    </a>
-                                </div>
-                                <div class="product-info">
-                                    <div class="product-title"><a href="javascript:void(0);" onclick="viewProduct(${product.id})">${product.name}</a></div>
-                                    <div class="product-price">
-                                        <span class="current-price">${currencySymbol}${convertedPrice}</span>
-                                        ${convertedOldPrice ? `<span class="old-price">${currencySymbol}${convertedOldPrice}</span>` : ''}
-                                    </div>
-                                    <div class="product-actions">
-                                        <button class="btn btn-primary" onclick="addToCart(${product.id})">
-                                            Add to Cart
-                                        </button>
-                                        <button class="btn" style="background: #fff; border: 1px solid #ccc;" onclick="viewProduct(${product.id})">
-                                            <i class="fas fa-eye"></i> Quick View
-                                        </button>
-                                    </div>
-                                </div>
+                        <div class="product-image-area">
+                            ${convertedOldPrice ? '<div class="theme-product-sale-ribbon" style="position: absolute; top: 10px; left: 10px; background: #e81816; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px;"> 11.11 SALE </div>' : ''}
+                            <a href="javascript:void(0);" onclick="viewProduct(${product.id})">
+                                <img src="${product.image}" alt="${product.name}" class="product-image">
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title"><a href="javascript:void(0);" onclick="viewProduct(${product.id})">${product.name}</a></div>
+                            <div class="product-price">
+                                <span class="current-price">${currencySymbol}${convertedPrice}</span>
+                                ${convertedOldPrice ? `<span class="old-price">${currencySymbol}${convertedOldPrice}</span>` : ''}
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                    Add to Cart
+                                </button>
+                                <button class="btn" style="background: #fff; border: 1px solid #ccc;" onclick="viewProduct(${product.id})">
+                                    <i class="fas fa-eye"></i> Quick View
+                                </button>
                             </div>
                         </div>
                     `;
@@ -922,7 +1083,7 @@
             });
         }
 
-        // View product details
+        // View product
         function viewProduct(productId) {
             database.ref('products').once('value').then(snapshot => {
                 const products = snapshot.val() || [];
@@ -946,7 +1107,11 @@
                             ${(product.features || ['High Quality', 'Durable', 'Premium Build']).map(feature => `<li>${feature}</li>`).join('')}
                         </ul>
                         
-                        <button class="btn btn-primary" onclick="addToCart(${product.id})" style="margin-top: 30px;">
+                        ${product.productUrl ? `<a href="${product.productUrl}" target="_blank" class="btn btn-primary" style="margin-top: 20px; text-decoration: none;">
+                            <i class="fas fa-external-link-alt"></i> View Product Page
+                        </a>` : ''}
+                        
+                        <button class="btn btn-primary" onclick="addToCart(${product.id})" style="margin-top: 15px;">
                             Add to Cart
                         </button>
                     </div>
@@ -957,7 +1122,7 @@
             });
         }
 
-        // Add to Cart function
+        // Add to cart
         function addToCart(productId) {
             database.ref('products').once('value').then(snapshot => {
                 const products = snapshot.val() || [];
@@ -982,7 +1147,6 @@
                 
                 showNotification(`${product.name} added to cart!`);
                 
-                // If the cart is open, refresh it
                 if (document.getElementById('cartSidebar').classList.contains('active')) {
                     loadCart();
                 }
@@ -1104,7 +1268,7 @@
             updateCartCount();
         }
 
-        // Open checkout modal
+        // Open checkout
         function openCheckout() {
             if (cart.length === 0) {
                 showNotification('Your cart is empty!');
@@ -1169,7 +1333,7 @@
             closeCart();
         }
 
-        // Cart sidebar controls
+        // Cart controls
         function openCart() {
             document.getElementById('cartSidebar').classList.add('active');
             document.getElementById('overlay').classList.add('active');
@@ -1181,23 +1345,23 @@
             document.getElementById('overlay').classList.remove('active');
         }
 
-        // Close modal
         function closeModal() {
             document.getElementById('productModal').classList.remove('active');
             document.getElementById('overlay').classList.remove('active');
         }
 
-        // Close checkout
         function closeCheckout() {
             document.getElementById('checkoutModal').classList.remove('active');
             document.getElementById('overlay').classList.remove('active');
         }
 
-        // Initialize the page
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initializeData();
             loadProducts();
             updateCartCount();
+            startSlideshow();
+            setInterval(createSnow, 200);
             
             database.ref('settings/checkoutUrl').on('value', snapshot => {
                 if (snapshot.exists()) {
