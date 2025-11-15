@@ -628,7 +628,26 @@
         </div>
     </footer>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDTdQRntlL10WMPBEbb5_9jp0Kc89fX8Y",
+            authDomain: "legendlfestyle.firebaseapp.com",
+            databaseURL: "https://legendlfestyle-default-rtdb.firebaseio.com",
+            projectId: "legendlfestyle",
+            storageBucket: "legendlfestyle.firebasestorage.app",
+            messagingSenderId: "1078539571802",
+            appId: "1:1078539571802:web:3ff1d6197ad72f94d73e63",
+            measurementId: "G-WMEWTT1HR7"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         // Currency configuration
         const currencyRates = {
             'USD': { symbol: '$', rate: 1 },
@@ -643,61 +662,63 @@
         let currencySymbol = currencyRates[currentCurrency].symbol;
         let conversionRate = currencyRates[currentCurrency].rate;
 
-        // Get checkout URL from localStorage or default to Google Form
-        let checkoutUrl = localStorage.getItem('checkoutUrl') || 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
+        // Get checkout URL from Firebase or default to Google Form
+        let checkoutUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
 
         // Initialize data if not exists
         function initializeData() {
-            if (!localStorage.getItem('products')) {
-                const defaultProducts = [
-                    {
-                        id: 1,
-                        name: "Gaming Keyboard",
-                        description: "Mechanical RGB gaming keyboard with customizable keys and anti-ghosting technology. Perfect for competitive gaming with responsive switches and durable construction.",
-                        price: 89.99,
-                        image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                        category: "Accessories",
-                        features: ["RGB Backlight", "Mechanical Switches", "Anti-ghosting", "Wrist Rest"],
-                        productUrl: "https://example.com/product/gaming-keyboard"
-                    },
-                    {
-                        id: 2,
-                        name: "Wireless Gaming Mouse",
-                        description: "High-precision wireless gaming mouse with adjustable DPI up to 16000. Features ergonomic design, long battery life, and customizable buttons for optimal gaming performance.",
-                        price: 59.99,
-                        image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                        category: "Accessories",
-                        features: ["Wireless", "Adjustable DPI", "Ergonomic", "Long Battery"],
-                        productUrl: "https://example.com/product/wireless-mouse"
-                    },
-                    {
-                        id: 3,
-                        name: "Gaming Headset",
-                        description: "Surround sound gaming headset with active noise cancellation. Features comfortable memory foam ear cushions, retractable microphone, and immersive 7.1 surround sound.",
-                        price: 79.99,
-                        image: "https://images.unsplash.com/photo-1599669454699-248893623440?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                        category: "Audio",
-                        features: ["Noise Cancellation", "Surround Sound", "Memory Foam", "Retractable Mic"],
-                        productUrl: "https://example.com/product/gaming-headset"
-                    },
-                    {
-                        id: 4,
-                        name: "Gaming Monitor",
-                        description: "27-inch 144Hz gaming monitor with 1ms response time. Features IPS panel for accurate colors, AMD FreeSync technology, and adjustable stand for comfortable viewing.",
-                        price: 299.99,
-                        image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                        category: "Displays",
-                        features: ["144Hz Refresh", "1ms Response", "IPS Panel", "AMD FreeSync"],
-                        productUrl: "https://example.com/product/gaming-monitor"
-                    }
-                ];
-                localStorage.setItem('products', JSON.stringify(defaultProducts));
-            }
+            // Check if products exist in Firebase
+            database.ref('products').once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    const defaultProducts = [
+                        {
+                            id: 1,
+                            name: "Gaming Keyboard",
+                            description: "Mechanical RGB gaming keyboard with customizable keys and anti-ghosting technology. Perfect for competitive gaming with responsive switches and durable construction.",
+                            price: 89.99,
+                            image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                            category: "Accessories",
+                            features: ["RGB Backlight", "Mechanical Switches", "Anti-ghosting", "Wrist Rest"],
+                            productUrl: "https://example.com/product/gaming-keyboard"
+                        },
+                        {
+                            id: 2,
+                            name: "Wireless Gaming Mouse",
+                            description: "High-precision wireless gaming mouse with adjustable DPI up to 16000. Features ergonomic design, long battery life, and customizable buttons for optimal gaming performance.",
+                            price: 59.99,
+                            image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                            category: "Accessories",
+                            features: ["Wireless", "Adjustable DPI", "Ergonomic", "Long Battery"],
+                            productUrl: "https://example.com/product/wireless-mouse"
+                        },
+                        {
+                            id: 3,
+                            name: "Gaming Headset",
+                            description: "Surround sound gaming headset with active noise cancellation. Features comfortable memory foam ear cushions, retractable microphone, and immersive 7.1 surround sound.",
+                            price: 79.99,
+                            image: "https://images.unsplash.com/photo-1599669454699-248893623440?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                            category: "Audio",
+                            features: ["Noise Cancellation", "Surround Sound", "Memory Foam", "Retractable Mic"],
+                            productUrl: "https://example.com/product/gaming-headset"
+                        },
+                        {
+                            id: 4,
+                            name: "Gaming Monitor",
+                            description: "27-inch 144Hz gaming monitor with 1ms response time. Features IPS panel for accurate colors, AMD FreeSync technology, and adjustable stand for comfortable viewing.",
+                            price: 299.99,
+                            image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                            category: "Displays",
+                            features: ["144Hz Refresh", "1ms Response", "IPS Panel", "AMD FreeSync"],
+                            productUrl: "https://example.com/product/gaming-monitor"
+                        }
+                    ];
+                    
+                    // Save default products to Firebase
+                    database.ref('products').set(defaultProducts);
+                }
+            });
 
-            if (!localStorage.getItem('orders')) {
-                localStorage.setItem('orders', JSON.stringify([]));
-            }
-
+            // Initialize cart in localStorage
             if (!localStorage.getItem('cart')) {
                 localStorage.setItem('cart', JSON.stringify([]));
             }
@@ -708,109 +729,115 @@
             return (price * conversionRate).toFixed(2);
         }
 
-        // Load products from localStorage
+        // Load products from Firebase
         function loadProducts() {
-            const products = JSON.parse(localStorage.getItem('products'));
-            const productsGrid = document.getElementById('productsGrid');
-            
-            productsGrid.innerHTML = '';
-            
-            products.forEach(product => {
-                const convertedPrice = convertPrice(product.price);
+            database.ref('products').on('value', snapshot => {
+                const products = snapshot.val() || [];
+                const productsGrid = document.getElementById('productsGrid');
                 
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" class="product-image">
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <p class="product-description">${product.description.substring(0, 100)}...</p>
-                        <div class="product-price">${currencySymbol}${convertedPrice}</div>
-                        <div class="product-actions">
-                            <button class="btn btn-outline" onclick="viewProduct(${product.id})">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="btn btn-primary" onclick="buyNow(${product.id})">
-                                <i class="fas fa-bolt"></i> Buy Now
-                            </button>
+                productsGrid.innerHTML = '';
+                
+                products.forEach(product => {
+                    const convertedPrice = convertPrice(product.price);
+                    
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-title">${product.name}</h3>
+                            <p class="product-description">${product.description.substring(0, 100)}...</p>
+                            <div class="product-price">${currencySymbol}${convertedPrice}</div>
+                            <div class="product-actions">
+                                <button class="btn btn-outline" onclick="viewProduct(${product.id})">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-primary" onclick="buyNow(${product.id})">
+                                    <i class="fas fa-bolt"></i> Buy Now
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `;
-                productsGrid.appendChild(productCard);
+                    `;
+                    productsGrid.appendChild(productCard);
+                });
             });
         }
 
         // View product details
         function viewProduct(productId) {
-            const products = JSON.parse(localStorage.getItem('products'));
-            const product = products.find(p => p.id === productId);
-            const convertedPrice = convertPrice(product.price);
-            
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = `
-                <div class="modal-image">
-                    <img src="${product.image}" alt="${product.name}">
-                </div>
-                <div class="modal-details">
-                    <h2 class="modal-title">${product.name}</h2>
-                    <div class="modal-price">${currencySymbol}${convertedPrice}</div>
-                    <p class="modal-description">${product.description}</p>
-                    <div class="form-group">
-                        <strong>Category:</strong> ${product.category || 'Gaming Accessories'}
+            database.ref('products').once('value').then(snapshot => {
+                const products = snapshot.val() || [];
+                const product = products.find(p => p.id === productId);
+                const convertedPrice = convertPrice(product.price);
+                
+                const modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `
+                    <div class="modal-image">
+                        <img src="${product.image}" alt="${product.name}">
                     </div>
-                    <div class="form-group">
-                        <strong>Features:</strong>
-                        <ul>
-                            ${(product.features || ['High Quality', 'Durable', 'Premium Build']).map(feature => `<li>${feature}</li>`).join('')}
-                        </ul>
+                    <div class="modal-details">
+                        <h2 class="modal-title">${product.name}</h2>
+                        <div class="modal-price">${currencySymbol}${convertedPrice}</div>
+                        <p class="modal-description">${product.description}</p>
+                        <div class="form-group">
+                            <strong>Category:</strong> ${product.category || 'Gaming Accessories'}
+                        </div>
+                        <div class="form-group">
+                            <strong>Features:</strong>
+                            <ul>
+                                ${(product.features || ['High Quality', 'Durable', 'Premium Build']).map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ${product.productUrl ? `
+                        <div class="form-group">
+                            <a href="${product.productUrl}" target="_blank" class="btn btn-outline">
+                                <i class="fas fa-external-link-alt"></i> View Product Page
+                            </a>
+                        </div>
+                        ` : ''}
+                        <button class="btn btn-primary" onclick="buyNow(${product.id})">
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </button>
                     </div>
-                    ${product.productUrl ? `
-                    <div class="form-group">
-                        <a href="${product.productUrl}" target="_blank" class="btn btn-outline">
-                            <i class="fas fa-external-link-alt"></i> View Product Page
-                        </a>
-                    </div>
-                    ` : ''}
-                    <button class="btn btn-primary" onclick="buyNow(${product.id})">
-                        <i class="fas fa-bolt"></i> Buy Now
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('productModal').classList.add('active');
+                `;
+                
+                document.getElementById('productModal').classList.add('active');
+            });
         }
 
         // Buy Now function
         function buyNow(productId) {
-            const products = JSON.parse(localStorage.getItem('products'));
-            const product = products.find(p => p.id === productId);
-            
-            // Add to cart
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    quantity: 1
-                });
-            }
-            
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            
-            // Close modal if open
-            document.getElementById('productModal').classList.remove('active');
-            
-            // Open cart
-            openCart();
-            
-            showNotification(`${product.name} added to cart!`);
+            database.ref('products').once('value').then(snapshot => {
+                const products = snapshot.val() || [];
+                const product = products.find(p => p.id === productId);
+                
+                // Add to cart
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const existingItem = cart.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.image,
+                        quantity: 1
+                    });
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                
+                // Close modal if open
+                document.getElementById('productModal').classList.remove('active');
+                
+                // Open cart
+                openCart();
+                
+                showNotification(`${product.name} added to cart!`);
+            });
         }
 
         // Cart functionality
@@ -926,8 +953,7 @@
                 return;
             }
             
-            // Save current cart as an order
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            // Save current cart as an order in Firebase
             const newOrder = {
                 id: Date.now(),
                 items: [...cart],
@@ -937,11 +963,17 @@
                 currency: currentCurrency
             };
             
-            orders.push(newOrder);
-            localStorage.setItem('orders', JSON.stringify(orders));
+            database.ref('orders').push(newOrder);
             
-            // Redirect to checkout URL
-            window.location.href = checkoutUrl;
+            // Get checkout URL from Firebase settings
+            database.ref('settings/checkoutUrl').once('value').then(snapshot => {
+                const url = snapshot.val();
+                if (url) {
+                    window.location.href = url;
+                } else {
+                    window.location.href = checkoutUrl;
+                }
+            });
             
             // Clear cart after checkout
             clearCart();
@@ -970,6 +1002,13 @@
             initializeData();
             loadProducts();
             updateCartCount();
+            
+            // Load checkout URL from Firebase
+            database.ref('settings/checkoutUrl').on('value', snapshot => {
+                if (snapshot.exists()) {
+                    checkoutUrl = snapshot.val();
+                }
+            });
             
             // Event listeners
             document.getElementById('cartBtn').addEventListener('click', openCart);
