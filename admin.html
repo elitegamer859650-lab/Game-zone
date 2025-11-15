@@ -559,7 +559,26 @@
         </footer>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDTdQRntlL10WMPBEbb5_9jp0Kc89fX8Y",
+            authDomain: "legendlfestyle.firebaseapp.com",
+            databaseURL: "https://legendlfestyle-default-rtdb.firebaseio.com",
+            projectId: "legendlfestyle",
+            storageBucket: "legendlfestyle.firebasestorage.app",
+            messagingSenderId: "1078539571802",
+            appId: "1:1078539571802:web:3ff1d6197ad72f94d73e63",
+            measurementId: "G-WMEWTT1HR7"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         // Admin credentials
         const ADMIN_EMAIL = "elitegamer859650@gmail.com";
         const ADMIN_PASSWORD = "acer4321234@";
@@ -586,9 +605,12 @@
                 document.getElementById('adminPanel').style.display = 'block';
                 document.getElementById('currencySelect').value = currentCurrency;
                 
-                // Load checkout URL
-                const checkoutUrl = localStorage.getItem('checkoutUrl') || 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
-                document.getElementById('checkoutUrl').value = checkoutUrl;
+                // Load checkout URL from Firebase
+                database.ref('settings/checkoutUrl').once('value').then(snapshot => {
+                    if (snapshot.exists()) {
+                        document.getElementById('checkoutUrl').value = snapshot.val();
+                    }
+                });
                 
                 loadProductsTable();
                 loadOrdersTable();
@@ -607,9 +629,12 @@
                 document.getElementById('loginError').style.display = 'none';
                 document.getElementById('currencySelect').value = currentCurrency;
                 
-                // Load checkout URL
-                const checkoutUrl = localStorage.getItem('checkoutUrl') || 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
-                document.getElementById('checkoutUrl').value = checkoutUrl;
+                // Load checkout URL from Firebase
+                database.ref('settings/checkoutUrl').once('value').then(snapshot => {
+                    if (snapshot.exists()) {
+                        document.getElementById('checkoutUrl').value = snapshot.val();
+                    }
+                });
                 
                 loadProductsTable();
                 loadOrdersTable();
@@ -675,51 +700,55 @@
 
         // Load products table
         function loadProductsTable() {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
-            const productsTable = document.getElementById('productsTable');
-            
-            productsTable.innerHTML = '';
-            
-            products.forEach(product => {
-                const convertedPrice = convertPrice(product.price);
+            database.ref('products').once('value').then(snapshot => {
+                const products = snapshot.val() || [];
+                const productsTable = document.getElementById('productsTable');
                 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${product.id}</td>
-                    <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; padding: 5px;"></td>
-                    <td>${product.name}</td>
-                    <td>${product.description.substring(0, 80)}...</td>
-                    <td>${currencySymbol}${convertedPrice}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editProduct(${product.id})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteProduct(${product.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                `;
-                productsTable.appendChild(row);
+                productsTable.innerHTML = '';
+                
+                products.forEach(product => {
+                    const convertedPrice = convertPrice(product.price);
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.id}</td>
+                        <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; padding: 5px;"></td>
+                        <td>${product.name}</td>
+                        <td>${product.description.substring(0, 80)}...</td>
+                        <td>${currencySymbol}${convertedPrice}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editProduct(${product.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteProduct(${product.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    `;
+                    productsTable.appendChild(row);
+                });
             });
         }
 
         // Edit product function
         function editProduct(productId) {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
-            const product = products.find(p => p.id === productId);
-            
-            if (product) {
-                document.getElementById('editProductId').value = product.id;
-                document.getElementById('editProductName').value = product.name;
-                document.getElementById('editProductDescription').value = product.description;
-                document.getElementById('editProductPrice').value = product.price;
-                document.getElementById('editProductImage').value = product.image;
-                document.getElementById('editProductCategory').value = product.category || '';
-                document.getElementById('editProductFeatures').value = (product.features || []).join(', ');
-                document.getElementById('editProductUrl').value = product.productUrl || '';
+            database.ref('products').once('value').then(snapshot => {
+                const products = snapshot.val() || [];
+                const product = products.find(p => p.id === productId);
                 
-                document.getElementById('editProductModal').style.display = 'flex';
-            }
+                if (product) {
+                    document.getElementById('editProductId').value = product.id;
+                    document.getElementById('editProductName').value = product.name;
+                    document.getElementById('editProductDescription').value = product.description;
+                    document.getElementById('editProductPrice').value = product.price;
+                    document.getElementById('editProductImage').value = product.image;
+                    document.getElementById('editProductCategory').value = product.category || '';
+                    document.getElementById('editProductFeatures').value = (product.features || []).join(', ');
+                    document.getElementById('editProductUrl').value = product.productUrl || '';
+                    
+                    document.getElementById('editProductModal').style.display = 'flex';
+                }
+            });
         }
 
         // Close edit modal
@@ -740,68 +769,79 @@
             const features = document.getElementById('editProductFeatures').value.split(',').map(f => f.trim());
             const productUrl = document.getElementById('editProductUrl').value;
             
-            let products = JSON.parse(localStorage.getItem('products')) || [];
-            const productIndex = products.findIndex(p => p.id === productId);
-            
-            if (productIndex !== -1) {
-                products[productIndex] = {
-                    ...products[productIndex],
-                    name: name,
-                    description: description,
-                    price: price,
-                    image: image,
-                    category: category,
-                    features: features,
-                    productUrl: productUrl
-                };
+            database.ref('products').once('value').then(snapshot => {
+                let products = snapshot.val() || [];
+                const productIndex = products.findIndex(p => p.id === productId);
                 
-                localStorage.setItem('products', JSON.stringify(products));
-                loadProductsTable();
-                closeEditModal();
-                
-                // Show success message
-                showAlert('Product updated successfully!', 'success');
-            }
+                if (productIndex !== -1) {
+                    products[productIndex] = {
+                        ...products[productIndex],
+                        name: name,
+                        description: description,
+                        price: price,
+                        image: image,
+                        category: category,
+                        features: features,
+                        productUrl: productUrl
+                    };
+                    
+                    database.ref('products').set(products).then(() => {
+                        loadProductsTable();
+                        closeEditModal();
+                        showAlert('Product updated successfully!', 'success');
+                    });
+                }
+            });
         });
 
         // Load orders table
         function loadOrdersTable() {
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            const ordersTable = document.getElementById('ordersTable');
-            
-            ordersTable.innerHTML = '';
-            
-            orders.forEach(order => {
-                const orderCurrency = order.currency || 'USD';
-                const orderSymbol = currencyRates[orderCurrency].symbol;
-                const orderRate = currencyRates[orderCurrency].rate;
-                const convertedTotal = (order.total * orderRate).toFixed(2);
+            database.ref('orders').once('value').then(snapshot => {
+                const ordersData = snapshot.val();
+                const orders = [];
                 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${new Date(order.date).toLocaleDateString()}</td>
-                    <td>${order.items.length} items</td>
-                    <td>${orderSymbol}${convertedTotal}</td>
-                    <td>
-                        <select onchange="updateOrderStatus(${order.id}, this.value)">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button class="btn btn-primary" onclick="viewOrderDetails(${order.id})">
-                            <i class="fas fa-eye"></i> Details
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteOrder(${order.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                `;
-                ordersTable.appendChild(row);
+                // Convert Firebase object to array
+                if (ordersData) {
+                    Object.keys(ordersData).forEach(key => {
+                        orders.push({ ...ordersData[key], firebaseKey: key });
+                    });
+                }
+                
+                const ordersTable = document.getElementById('ordersTable');
+                ordersTable.innerHTML = '';
+                
+                orders.forEach(order => {
+                    const orderCurrency = order.currency || 'USD';
+                    const orderSymbol = currencyRates[orderCurrency].symbol;
+                    const orderRate = currencyRates[orderCurrency].rate;
+                    const convertedTotal = (order.total * orderRate).toFixed(2);
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${order.id}</td>
+                        <td>${new Date(order.date).toLocaleDateString()}</td>
+                        <td>${order.items.length} items</td>
+                        <td>${orderSymbol}${convertedTotal}</td>
+                        <td>
+                            <select onchange="updateOrderStatus('${order.firebaseKey}', this.value)">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="viewOrderDetails('${order.firebaseKey}')">
+                                <i class="fas fa-eye"></i> Details
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteOrder('${order.firebaseKey}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    `;
+                    ordersTable.appendChild(row);
+                });
             });
         }
 
@@ -817,88 +857,91 @@
             const features = document.getElementById('productFeatures').value.split(',').map(f => f.trim());
             const productUrl = document.getElementById('productUrl').value;
             
-            const products = JSON.parse(localStorage.getItem('products')) || [];
-            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-            
-            const newProduct = {
-                id: newId,
-                name: name,
-                description: description,
-                price: price,
-                image: image,
-                category: category,
-                features: features,
-                productUrl: productUrl
-            };
-            
-            products.push(newProduct);
-            localStorage.setItem('products', JSON.stringify(products));
-            
-            // Reset form
-            document.getElementById('addProductForm').reset();
-            document.getElementById('productCategory').value = "Gaming Accessories";
-            
-            // Show success message
-            showAlert('Product added successfully!', 'success');
-            
-            // Switch to products section
-            showSection('products');
+            database.ref('products').once('value').then(snapshot => {
+                const products = snapshot.val() || [];
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                
+                const newProduct = {
+                    id: newId,
+                    name: name,
+                    description: description,
+                    price: price,
+                    image: image,
+                    category: category,
+                    features: features,
+                    productUrl: productUrl
+                };
+                
+                products.push(newProduct);
+                database.ref('products').set(products).then(() => {
+                    // Reset form
+                    document.getElementById('addProductForm').reset();
+                    document.getElementById('productCategory').value = "Gaming Accessories";
+                    
+                    // Show success message
+                    showAlert('Product added successfully!', 'success');
+                    
+                    // Switch to products section
+                    showSection('products');
+                });
+            });
         });
 
         // Delete product function
         function deleteProduct(productId) {
             if (confirm('Are you sure you want to delete this product?')) {
-                let products = JSON.parse(localStorage.getItem('products')) || [];
-                products = products.filter(product => product.id !== productId);
-                localStorage.setItem('products', JSON.stringify(products));
-                loadProductsTable();
-                showAlert('Product deleted successfully!', 'success');
+                database.ref('products').once('value').then(snapshot => {
+                    let products = snapshot.val() || [];
+                    products = products.filter(product => product.id !== productId);
+                    database.ref('products').set(products).then(() => {
+                        loadProductsTable();
+                        showAlert('Product deleted successfully!', 'success');
+                    });
+                });
             }
         }
 
         // Update order status
-        function updateOrderStatus(orderId, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('orders')) || [];
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                order.status = newStatus;
-                localStorage.setItem('orders', JSON.stringify(orders));
+        function updateOrderStatus(orderKey, newStatus) {
+            database.ref('orders/' + orderKey).update({
+                status: newStatus
+            }).then(() => {
                 showAlert('Order status updated!', 'success');
-            }
+            });
         }
 
         // View order details
-        function viewOrderDetails(orderId) {
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            const order = orders.find(o => o.id === orderId);
-            
-            if (order) {
-                const orderCurrency = order.currency || 'USD';
-                const orderSymbol = currencyRates[orderCurrency].symbol;
-                const orderRate = currencyRates[orderCurrency].rate;
+        function viewOrderDetails(orderKey) {
+            database.ref('orders/' + orderKey).once('value').then(snapshot => {
+                const order = snapshot.val();
                 
-                let details = `Order ID: ${order.id}\nDate: ${new Date(order.date).toLocaleString()}\nStatus: ${order.status}\nCurrency: ${orderCurrency}\n\nItems:\n`;
-                
-                order.items.forEach(item => {
-                    const convertedPrice = (item.price * orderRate).toFixed(2);
-                    details += `- ${item.name} (Qty: ${item.quantity}) - ${orderSymbol}${convertedPrice} each\n`;
-                });
-                
-                const convertedTotal = (order.total * orderRate).toFixed(2);
-                details += `\nTotal: ${orderSymbol}${convertedTotal}`;
-                
-                alert(details);
-            }
+                if (order) {
+                    const orderCurrency = order.currency || 'USD';
+                    const orderSymbol = currencyRates[orderCurrency].symbol;
+                    const orderRate = currencyRates[orderCurrency].rate;
+                    
+                    let details = `Order ID: ${order.id}\nDate: ${new Date(order.date).toLocaleString()}\nStatus: ${order.status}\nCurrency: ${orderCurrency}\n\nItems:\n`;
+                    
+                    order.items.forEach(item => {
+                        const convertedPrice = (item.price * orderRate).toFixed(2);
+                        details += `- ${item.name} (Qty: ${item.quantity}) - ${orderSymbol}${convertedPrice} each\n`;
+                    });
+                    
+                    const convertedTotal = (order.total * orderRate).toFixed(2);
+                    details += `\nTotal: ${orderSymbol}${convertedTotal}`;
+                    
+                    alert(details);
+                }
+            });
         }
 
         // Delete order
-        function deleteOrder(orderId) {
+        function deleteOrder(orderKey) {
             if (confirm('Are you sure you want to delete this order?')) {
-                let orders = JSON.parse(localStorage.getItem('orders')) || [];
-                orders = orders.filter(order => order.id !== orderId);
-                localStorage.setItem('orders', JSON.stringify(orders));
-                loadOrdersTable();
-                showAlert('Order deleted successfully!', 'success');
+                database.ref('orders/' + orderKey).remove().then(() => {
+                    loadOrdersTable();
+                    showAlert('Order deleted successfully!', 'success');
+                });
             }
         }
 
@@ -906,8 +949,9 @@
         function saveCheckoutUrl() {
             const url = document.getElementById('checkoutUrl').value;
             if (url) {
-                localStorage.setItem('checkoutUrl', url);
-                showAlert('Checkout URL saved successfully!', 'success');
+                database.ref('settings/checkoutUrl').set(url).then(() => {
+                    showAlert('Checkout URL saved successfully!', 'success');
+                });
             } else {
                 showAlert('Please enter a valid URL', 'danger');
             }
