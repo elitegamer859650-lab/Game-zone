@@ -3,30 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameZone - Premium Gaming Store</title>
+    <title>Spark - Premium Gadgets Store (Powered by Firebase)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="//webfonts.zoho.com/css?family=Poppins:400,500,600,700/Montserrat:700/Lora:400&display=swap">
     <style>
+        /* BASE STYLES - Matched to Spark Template */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            color: #1a1a1a; /* Default text color */
         }
 
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --gray: #95a5a6;
+            --primary-dark: #212121;
+            --secondary-accent: #FFCD6C; /* Gold/Yellow accent */
+            --link-blue: #298BFF;
+            --body-bg: #f5f7fa;
+            --card-bg: #FAFAFA;
+            --text-light: #fff;
+            --text-dark: #000;
         }
 
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: var(--body-bg);
             line-height: 1.6;
         }
 
@@ -34,13 +35,16 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 100px; /* Matched to template's wide padding */
+        }
+        @media (max-width: 991px) {
+            .container { padding: 0 24px; }
         }
 
-        /* Header Styles */
+        /* HEADER & NAVIGATION */
         header {
-            background-color: var(--primary);
-            color: white;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
             padding: 15px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: sticky;
@@ -55,15 +59,9 @@
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
             font-size: 1.8rem;
             font-weight: 700;
-        }
-
-        .logo i {
-            color: var(--secondary);
+            color: var(--text-light);
         }
 
         nav ul {
@@ -73,27 +71,26 @@
         }
 
         nav a {
-            color: white;
+            color: var(--text-light);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
 
         nav a:hover {
-            color: var(--secondary);
+            color: var(--secondary-accent);
         }
 
         .header-actions {
             display: flex;
             gap: 15px;
+            align-items: center;
         }
 
+        /* BUTTONS (Matching Spark's primary style) */
         .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 12px 24px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -101,254 +98,291 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
+            text-decoration: none;
+            text-transform: uppercase;
         }
-
+        
         .btn-primary {
-            background-color: var(--secondary);
-            color: white;
+            background-color: var(--secondary-accent);
+            color: var(--text-dark);
         }
 
         .btn-primary:hover {
-            background-color: #2980b9;
+            background-color: #ffc14b; 
         }
 
-        .btn-outline {
-            background-color: transparent;
-            color: white;
-            border: 1px solid white;
-        }
-
-        .btn-outline:hover {
-            background-color: white;
-            color: var(--primary);
-        }
-
-        .btn-danger {
-            background-color: var(--accent);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-
-        .btn-success {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
-
-        .btn-warning {
-            background-color: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background-color: #e67e22;
-        }
-
-        /* Hero Section */
+        /* Hero Section (Simulating Spark Banner 15) */
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-01.webp?storefront_domain=sparkgadgets-demo.zohoecommerce.com');
             background-size: cover;
             background-position: center;
-            color: white;
             padding: 100px 0;
-            text-align: center;
+            color: var(--text-light);
+            min-height: 723px;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 50%;
+        }
+        @media (max-width: 767px) {
+            .hero-content { max-width: 100%; }
+            .hero { min-height: 400px; padding: 50px 0; }
+        }
+
+        .hero p.pre-title {
+            color: var(--secondary-accent);
+            font-family: 'Lora', serif;
+            font-size: 24px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 50px;
+            font-weight: 700;
+            line-height: 1.2;
             margin-bottom: 20px;
         }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto 30px;
+        .hero h1 span {
+            color: var(--secondary-accent);
         }
 
-        /* Products Section */
+        /* CATEGORY GRID (Matching Spark's Category section) */
         .section-title {
-            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 56px;
             margin: 50px 0 30px;
-            font-size: 2rem;
-            color: var(--primary);
+            padding-top: 40px;
+        }
+        @media (max-width: 767px) {
+             .section-title { font-size: 16px; line-height: 24px; padding-top: 20px; }
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 20px;
+            padding-bottom: 40px;
+            text-align: center;
+        }
+        @media (max-width: 767px) {
+            .category-grid { grid-template-columns: repeat(4, 1fr); padding-bottom: 20px; }
+        }
+
+        .category-card a {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+        .category-card a:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-card img {
+            width: 61px;
+            height: 75px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        .category-card p {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        /* PRODUCT GRID (Matching Spark's Product List 06 Style) */
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-all a {
+            color: var(--link-blue);
+            font-weight: 500;
+            font-size: 18px;
+            text-decoration: none;
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
             margin-bottom: 50px;
+            padding-top: 20px;
+        }
+        @media (max-width: 767px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding-top: 12px; }
         }
 
         .product-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
+        .product-image-area {
+            position: relative;
+            background: #fff; /* White background for product image area */
+        }
         .product-image {
             height: 200px;
             width: 100%;
             object-fit: contain;
-            padding: 10px;
-            background: #f8f9fa;
-        }
-
-        .product-info {
             padding: 20px;
         }
 
-        .product-title {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--dark);
+        .product-info {
+            padding: 15px;
         }
 
-        .product-description {
-            color: var(--gray);
-            margin-bottom: 15px;
-            font-size: 0.9rem;
+        .product-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .product-title a {
+            text-decoration: none;
+            color: inherit;
         }
 
         .product-price {
-            font-size: 1.4rem;
+            font-size: 18px;
             font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 15px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: baseline;
+        }
+        
+        .product-price .old-price {
+            text-decoration: line-through;
+            font-size: 14px;
+            font-weight: 400;
+            color: #868686;
         }
 
         .product-actions {
             display: flex;
             justify-content: space-between;
         }
+        .product-actions .btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            border-radius: 4px;
+            text-transform: none;
+        }
 
-        /* Cart */
+        /* Footer (Matching Spark's dark style) */
+        footer {
+            background: var(--primary-dark);
+            color: #ccc;
+            padding: 80px 0 20px;
+        }
+        @media (max-width: 767px) {
+             footer { padding: 40px 0 20px; }
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid #4d4d4d;
+        }
+
+        .footer-column {
+            flex-grow: 1;
+            min-width: 180px;
+        }
+
+        .footer-column h3 {
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-decoration: underline;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 1.8;
+            display: block;
+        }
+
+        .footer-column a:hover {
+            color: var(--secondary-accent);
+        }
+
+        .copyright {
+            text-align: left;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Utility Styles */
+        .text-accent { color: var(--secondary-accent); }
+        .text-white { color: var(--text-light); }
+        .text-dark { color: var(--text-dark); }
+        .text-link { color: var(--link-blue); }
+        .text-link:hover { text-decoration: underline; }
+        .text-uppercase { text-transform: uppercase; }
+
+        /* Cart Sidebar & Modal Styles (Keep existing functionality, adapt colors) */
         .cart-sidebar {
             position: fixed;
             top: 0;
             right: -400px;
             width: 380px;
             height: 100vh;
-            background: white;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            background: var(--card-bg); /* Use light background for cart */
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
             transition: right 0.3s;
             z-index: 1000;
             padding: 20px;
             overflow-y: auto;
         }
-
-        .cart-sidebar.active {
-            right: 0;
-        }
-
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .cart-items {
-            margin-bottom: 20px;
-        }
-
-        .cart-item {
-            display: flex;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .cart-item-image {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            border-radius: 4px;
-            margin-right: 15px;
-            background: #f8f9fa;
-            padding: 5px;
-        }
-
-        .cart-item-details {
-            flex: 1;
-        }
-
-        .cart-item-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .cart-item-price {
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        .cart-item-quantity {
-            display: flex;
-            align-items: center;
-            margin-top: 5px;
-        }
-
-        .quantity-btn {
-            background: #f1f1f1;
-            border: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .quantity-input {
-            width: 40px;
-            text-align: center;
-            margin: 0 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 2px;
-        }
-
+        .cart-sidebar.active { right: 0; }
+        
+        .cart-header h2 { color: var(--text-dark); }
+        
         .cart-total {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin: 20px 0;
-            text-align: right;
+             color: var(--primary-dark);
         }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
+        /* Notification style adjustment */
+        .notification {
+            background: #008805; /* Use a friendly success color */
         }
-
-        .overlay.active {
-            display: block;
-        }
-
+        
         /* Product Modal */
         .product-modal {
+            /* Styles remain largely functional, ensuring visibility */
             display: none;
             position: fixed;
             top: 0;
@@ -360,279 +394,170 @@
             align-items: center;
             justify-content: center;
         }
-
-        .product-modal.active {
-            display: flex;
-        }
-
         .modal-content {
-            background: white;
-            border-radius: 8px;
+            background: #fff;
+            color: var(--text-dark);
             max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 30px;
-            position: relative;
         }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        .modal-body {
-            display: flex;
-            gap: 30px;
-            margin-top: 20px;
-        }
-
-        .modal-image {
-            flex: 1;
-            max-width: 300px;
-        }
-
-        .modal-image img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
         .modal-details {
-            flex: 2;
+             color: var(--text-dark);
         }
-
-        .modal-title {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
         .modal-price {
-            font-size: 1.8rem;
-            color: var(--accent);
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .modal-description {
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: white;
-            padding: 50px 0 20px;
-            margin-top: 50px;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .footer-column h3 {
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-
-        .footer-column ul {
-            list-style: none;
-        }
-
-        .footer-column ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-column a {
-            color: #ddd;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-column a:hover {
-            color: var(--secondary);
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
-            color: #aaa;
-        }
-
-        .powered-by {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: #ddd;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav ul {
-                gap: 15px;
-            }
-
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-
-            .cart-sidebar {
-                width: 100%;
-                right: -100%;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-
-            .modal-body {
-                flex-direction: column;
-            }
-
-            .modal-image {
-                max-width: 100%;
-            }
+            color: var(--primary-dark);
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-gamepad"></i>
-                    <span>GameZone</span>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
-                        <li><a href="#products"><i class="fas fa-shopping-bag"></i> Products</a></li>
-                        <li><a href="#about"><i class="fas fa-info-circle"></i> About</a></li>
-                        <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
-                    </ul>
-                </nav>
-                <div class="header-actions">
-                    <button class="btn btn-primary" id="cartBtn">
-                        <i class="fas fa-shopping-cart"></i> Cart <span id="cartCount">0</span>
-                    </button>
-                </div>
+        <div class="container header-content">
+            <div class="logo">
+                Spark
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#products">Products</a></li>
+                    <li><a href="javascript:;">Categories</a></li>
+                    <li><a href="javascript:;">About</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="javascript:void(0);" class="text-white text-uppercase" style="font-size:14px;">USD $</a>
+
+                <button class="btn btn-primary" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i> Cart <span id="cartCount">0</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
-        <div class="container">
-            <h1>Premium Gaming Equipment</h1>
-            <p>Discover the latest gaming gear, consoles, and accessories to elevate your gaming experience to the next level.</p>
-            <button class="btn btn-primary">
-                <i class="fas fa-shopping-bag"></i> Shop Now
+        <div class="container hero-content">
+            <p class="pre-title text-accent">Special Discount</p>
+            <h1>CHOOSE SPARK CHOOSE SAVINGS! UPTO <span class="text-accent">20% OFF</span></h1>
+            <p class="text-white" style="font-weight: 400;">1.85” AMOLED Display | Premium Metal Build</p>
+            <button class="btn btn-primary" onclick="document.getElementById('products').scrollIntoView({ behavior: 'smooth' });">
+                Shop Now
             </button>
         </div>
     </section>
 
-    <!-- Products Section -->
-    <section id="products">
+    <section>
         <div class="container">
-            <h2 class="section-title">Featured Products</h2>
-            <div class="products-grid" id="productsGrid">
-                <!-- Products will be loaded here -->
+            <h2 class="section-title text-dark">Shop by Categories</h2>
+            <div class="category-grid">
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-06.webp" alt="Headphones"><p class="text-dark">Headphones</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-14.webp" alt="Earbuds"><p class="text-dark">Earbuds</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-07.webp" alt="Power Banks"><p class="text-dark">Power Banks</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-08.webp" alt="Laptops"><p class="text-dark">Laptops</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-09.webp" alt="Fitness Bands"><p class="text-dark">Fitness Bands</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-10.webp" alt="Speaker"><p class="text-dark">Speaker</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-11.webp" alt="Charges"><p class="text-dark">Charges</p></a></div>
+                <div class="category-card"><a href="javascript:void(0);"><img src="https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-12.webp" alt="Security Cam"><p class="text-dark">Security Cam</p></a></div>
             </div>
         </div>
     </section>
 
-    <!-- Cart Sidebar -->
+    <section id="products">
+        <div class="container">
+            <div class="products-header">
+                <h2 class="section-title text-dark">Latest Products</h2>
+                <div class="view-all"><a href="#products" class="text-link">View All &nbsp; <i class="fas fa-arrow-right"></i></a></div>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+             <div style="background-image:linear-gradient(to left, rgba(0,0,0,0.5), #000000d1), url('https://cdn1.zohoecommerce.com/stock_images/gadgets-zs200006/zcstock-images-17.webp?storefront_domain=sparkgadgets-demo.zohoecommerce.com'); background-size: cover; background-position: center; border-radius: 16px; padding: 70px 56px; margin-bottom: 40px;">
+                <p class="text-white" style="font-size: 16px; line-height: 30px;">Turn Down</p>
+                <h2 class="text-accent" style="font-family:'Montserrat', sans-serif; font-size: 32px; font-weight: 700; line-height: 38px; margin-bottom: 5px;">The Chaos,</h2>
+                <div style="width: 60px; height: 1px; background-color: #fff; margin-bottom: 10px;"></div>
+                <p class="text-white" style="font-size: 14px;">Turn Up The Productivity</p>
+                <button class="btn btn-primary" style="margin-top: 16px;">Shop Now</button>
+            </div>
+        </div>
+    </section>
+
     <div class="overlay" id="overlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
             <h2>Your Cart</h2>
-            <button class="btn btn-outline" id="closeCart">
+            <button class="btn btn-primary" id="closeCart" style="background: none; border: none; color: var(--text-dark); padding: 5px 10px;">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         <div class="cart-items" id="cartItems">
-            <!-- Cart items will be loaded here -->
-        </div>
+            </div>
         <div class="cart-total">
             Total: <span id="currencySymbol">$</span><span id="cartTotal">0.00</span>
         </div>
-        <button class="btn btn-primary btn-block" id="checkoutBtn">
+        <button class="btn btn-primary" id="checkoutBtn" style="width: 100%;">
             <i class="fas fa-credit-card"></i> Proceed to Checkout
         </button>
     </div>
 
-    <!-- Product Modal -->
     <div class="product-modal" id="productModal">
         <div class="modal-content">
             <button class="modal-close" id="closeModal">
                 <i class="fas fa-times"></i>
             </button>
             <div class="modal-body" id="modalBody">
-                <!-- Product details will be loaded here -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div class="footer-column">
-                    <h3>GameZone</h3>
-                    <p>Your one-stop shop for premium gaming equipment and accessories.</p>
+                <div class="footer-column" style="flex-grow: 2;">
+                    <div class="logo text-white" style="margin-bottom: 32px; font-size: 24px;">Spark</div>
+                     <h3 style="color: #B3B3B3; text-decoration: none;">Subscribe to our Mail alerts</h3>
+                     <div style="display: flex; margin-bottom: 20px;">
+                        <input type="email" placeholder="Enter Your Email Address" style="flex-grow: 1; padding: 12px 20px; border-radius: 21px 0 0 21px; background: #373737; border: 1px solid #A5A5A5; color: #737373; border-right: none;">
+                        <button class="btn" style="background: #373737; color: #CCC; border: 1px solid #A5A5A5; border-radius: 0 24px 24px 0; padding: 12px 20px; text-transform: none;">Submit</button>
+                     </div>
                 </div>
                 <div class="footer-column">
-                    <h3>Quick Links</h3>
+                    <h3>Our Products</h3>
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#products">Products</a></li>
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="javascript:void(0);">Smart Watches</a></li>
+                        <li><a href="javascript:void(0);">Wireless Earbuds</a></li>
+                        <li><a href="javascript:void(0);">Bluetooth Speakers</a></li>
+                        <li><a href="javascript:void(0);">Spark Gift Card</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Contact Info</h3>
+                    <h3>About Spark</h3>
                     <ul>
-                        <li><i class="fas fa-phone"></i> +92 309 6602143</li>
-                        <li><i class="fas fa-envelope"></i> elitegamer859650@gmail.com</li>
+                        <li><a href="javascript:void(0);">About us</a></li>
+                        <li><a href="javascript:void(0);">Blog</a></li>
+                        <li><a href="javascript:void(0);">Careers</a></li>
+                        <li><a href="javascript:void(0);">In the Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="javascript:void(0);">Track your order</a></li>
+                        <li><a href="javascript:void(0);">Shipping and return policy</a></li>
+                        <li><a href="javascript:void(0);">Product Support</a></li>
+                        <li><a href="javascript:void(0);">Contact us</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2025 GameZone. All rights reserved.
-            </div>
-            <div class="powered-by">
-                Powered by MGP Studio
+                @ Copyright 2024 @ <span style="font-weight: 500; color: #fff;">Spark World of Gadgets</span>. All Rights Reserved.
             </div>
         </div>
     </footer>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script>
-        // Firebase configuration
+        // Firebase configuration (YOUR DATA)
         const firebaseConfig = {
             apiKey: "AIzaSyDDTdQRntlL10WMPBEbb5_9jp0Kc89fX8Y",
             authDomain: "legendlfestyle.firebaseapp.com",
@@ -648,7 +573,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Currency configuration
+        // Currency configuration (YOUR DATA)
         const currencyRates = {
             'USD': { symbol: '$', rate: 1 },
             'EUR': { symbol: '€', rate: 0.85 },
@@ -662,99 +587,77 @@
         let currencySymbol = currencyRates[currentCurrency].symbol;
         let conversionRate = currencyRates[currentCurrency].rate;
 
-        // Get checkout URL from Firebase or default to Google Form
+        // Get checkout URL from Firebase or default (YOUR DATA)
         let checkoutUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdYdJ23hSvXjNBgqnjnxLdQl2ACXA5blZX-a84ZuRCoDuoBuA/viewform';
 
-        // Initialize data if not exists
-        function initializeData() {
-            // Check if products exist in Firebase
-            database.ref('products').once('value').then(snapshot => {
-                if (!snapshot.exists()) {
-                    const defaultProducts = [
-                        {
-                            id: 1,
-                            name: "Gaming Keyboard",
-                            description: "Mechanical RGB gaming keyboard with customizable keys and anti-ghosting technology. Perfect for competitive gaming with responsive switches and durable construction.",
-                            price: 89.99,
-                            image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                            category: "Accessories",
-                            features: ["RGB Backlight", "Mechanical Switches", "Anti-ghosting", "Wrist Rest"],
-                            productUrl: "https://example.com/product/gaming-keyboard"
-                        },
-                        {
-                            id: 2,
-                            name: "Wireless Gaming Mouse",
-                            description: "High-precision wireless gaming mouse with adjustable DPI up to 16000. Features ergonomic design, long battery life, and customizable buttons for optimal gaming performance.",
-                            price: 59.99,
-                            image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                            category: "Accessories",
-                            features: ["Wireless", "Adjustable DPI", "Ergonomic", "Long Battery"],
-                            productUrl: "https://example.com/product/wireless-mouse"
-                        },
-                        {
-                            id: 3,
-                            name: "Gaming Headset",
-                            description: "Surround sound gaming headset with active noise cancellation. Features comfortable memory foam ear cushions, retractable microphone, and immersive 7.1 surround sound.",
-                            price: 79.99,
-                            image: "https://images.unsplash.com/photo-1599669454699-248893623440?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                            category: "Audio",
-                            features: ["Noise Cancellation", "Surround Sound", "Memory Foam", "Retractable Mic"],
-                            productUrl: "https://example.com/product/gaming-headset"
-                        },
-                        {
-                            id: 4,
-                            name: "Gaming Monitor",
-                            description: "27-inch 144Hz gaming monitor with 1ms response time. Features IPS panel for accurate colors, AMD FreeSync technology, and adjustable stand for comfortable viewing.",
-                            price: 299.99,
-                            image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-                            category: "Displays",
-                            features: ["144Hz Refresh", "1ms Response", "IPS Panel", "AMD FreeSync"],
-                            productUrl: "https://example.com/product/gaming-monitor"
-                        }
-                    ];
-                    
-                    // Save default products to Firebase
-                    database.ref('products').set(defaultProducts);
-                }
-            });
-
-            // Initialize cart in localStorage
-            if (!localStorage.getItem('cart')) {
-                localStorage.setItem('cart', JSON.stringify([]));
-            }
-        }
-
+        // --- CORE FUNCTIONS (ADAPTED TO NEW UI) ---
+        
         // Convert price based on selected currency
         function convertPrice(price) {
             return (price * conversionRate).toFixed(2);
         }
 
-        // Load products from Firebase
+        // Initialize data if not exists (YOUR DATA)
+        function initializeData() {
+            database.ref('products').once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    const defaultProducts = [
+                        { id: 1, name: "AeroPods X2", description: "Premium wireless earbuds with noise cancellation.", price: 699.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-01.webp/5731947000000146101/400x400", category: "Audio", features: ["Noise Cancellation", "10h Playtime"] },
+                        { id: 2, name: "BassWave Pro", description: "Powerful portable Bluetooth speaker with deep bass.", price: 4999.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-02.webp/5731947000000146155/400x400", category: "Audio", features: ["Waterproof", "24h Battery"] },
+                        { id: 3, name: "Casio Men's Watch", description: "Classic analog watch with leather strap.", price: 2000.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-06.webp/5731947000000146841/400x400", category: "Timepieces", features: ["Analog", "Water Resistant"] },
+                        { id: 4, name: "DeepSea Pro", description: "Rugged smart watch built for adventure.", price: 1000.00, image: "https://cdn1.zohoecommerce.com/product-images/zc-stock-images-08.webp/5731947000000146315/400x400", category: "Wearables", features: ["GPS", "Heart Rate Monitor"] }
+                    ];
+                    database.ref('products').set(defaultProducts);
+                }
+            });
+
+            if (!localStorage.getItem('cart')) {
+                localStorage.setItem('cart', JSON.stringify([]));
+            }
+        }
+
+        // Load products from Firebase (ADAPTED TO NEW UI)
         function loadProducts() {
             database.ref('products').on('value', snapshot => {
                 const products = snapshot.val() || [];
                 const productsGrid = document.getElementById('productsGrid');
-                
                 productsGrid.innerHTML = '';
                 
                 products.forEach(product => {
                     const convertedPrice = convertPrice(product.price);
                     
+                    // Check for old price for Sale ribbon effect (Simulated for this UI)
+                    const oldPrice = product.price > 1000 ? (product.price * 1.1).toFixed(2) : null;
+                    const convertedOldPrice = oldPrice ? convertPrice(oldPrice) : null;
+
                     const productCard = document.createElement('div');
                     productCard.className = 'product-card';
                     productCard.innerHTML = `
-                        <img src="${product.image}" alt="${product.name}" class="product-image">
-                        <div class="product-info">
-                            <h3 class="product-title">${product.name}</h3>
-                            <p class="product-description">${product.description.substring(0, 100)}...</p>
-                            <div class="product-price">${currencySymbol}${convertedPrice}</div>
-                            <div class="product-actions">
-                                <button class="btn btn-outline" onclick="viewProduct(${product.id})">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <button class="btn btn-primary" onclick="buyNow(${product.id})">
-                                    <i class="fas fa-bolt"></i> Buy Now
-                                </button>
+                        <div class="theme-prod-box theme-product-list-style-06">
+                            <div class="theme-product-box-content">
+                                <div class="theme-product-image-area">
+                                    ${convertedOldPrice ? '<div class="theme-product-sale-ribbon" style="position: absolute; top: 10px; left: 10px; background: #e81816; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px;"> Sale </div>' : ''}
+                                    <a href="javascript:void(0);" onclick="viewProduct(${product.id})">
+                                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                                    </a>
+                                </div>
+                                <div class="theme-product-details-area">
+                                    <div class="product-info">
+                                        <div class="product-title"><a href="javascript:void(0);" onclick="viewProduct(${product.id})">${product.name}</a></div>
+                                        <div class="product-price">
+                                            <span class="current-price">${currencySymbol}${convertedPrice}</span>
+                                            ${convertedOldPrice ? `<span class="old-price">${currencySymbol}${convertedOldPrice}</span>` : ''}
+                                        </div>
+                                        <div class="product-actions">
+                                            <button class="btn btn-primary" onclick="buyNow(${product.id})">
+                                                Add to Cart
+                                            </button>
+                                            <button class="btn" style="background: #fff; border: 1px solid #ccc;" onclick="viewProduct(${product.id})">
+                                                <i class="fas fa-eye"></i> Quick View
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -763,40 +666,32 @@
             });
         }
 
-        // View product details
+        // View product details (ADAPTED TO NEW UI)
         function viewProduct(productId) {
             database.ref('products').once('value').then(snapshot => {
                 const products = snapshot.val() || [];
                 const product = products.find(p => p.id === productId);
+                if (!product) return;
+
                 const convertedPrice = convertPrice(product.price);
                 
                 const modalBody = document.getElementById('modalBody');
                 modalBody.innerHTML = `
                     <div class="modal-image">
-                        <img src="${product.image}" alt="${product.name}">
+                        <img src="${product.image}" alt="${product.name}" style="width: 100%; height: auto; object-fit: contain; border-radius: 8px;">
                     </div>
                     <div class="modal-details">
                         <h2 class="modal-title">${product.name}</h2>
                         <div class="modal-price">${currencySymbol}${convertedPrice}</div>
                         <p class="modal-description">${product.description}</p>
-                        <div class="form-group">
-                            <strong>Category:</strong> ${product.category || 'Gaming Accessories'}
-                        </div>
-                        <div class="form-group">
-                            <strong>Features:</strong>
-                            <ul>
-                                ${(product.features || ['High Quality', 'Durable', 'Premium Build']).map(feature => `<li>${feature}</li>`).join('')}
-                            </ul>
-                        </div>
-                        ${product.productUrl ? `
-                        <div class="form-group">
-                            <a href="${product.productUrl}" target="_blank" class="btn btn-outline">
-                                <i class="fas fa-external-link-alt"></i> View Product Page
-                            </a>
-                        </div>
-                        ` : ''}
-                        <button class="btn btn-primary" onclick="buyNow(${product.id})">
-                            <i class="fas fa-bolt"></i> Buy Now
+                        
+                        <h4 style="font-size: 16px; margin-top: 20px;">Features:</h4>
+                        <ul style="list-style: disc; margin-left: 20px;">
+                            ${(product.features || ['High Quality', 'Durable', 'Premium Build']).map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                        
+                        <button class="btn btn-primary" onclick="buyNow(${product.id})" style="margin-top: 30px;">
+                            Add to Cart
                         </button>
                     </div>
                 `;
@@ -805,13 +700,12 @@
             });
         }
 
-        // Buy Now function
+        // Buy Now function (YOUR LOGIC)
         function buyNow(productId) {
             database.ref('products').once('value').then(snapshot => {
                 const products = snapshot.val() || [];
                 const product = products.find(p => p.id === productId);
                 
-                // Add to cart
                 let cart = JSON.parse(localStorage.getItem('cart')) || [];
                 const existingItem = cart.find(item => item.id === productId);
                 
@@ -830,17 +724,15 @@
                 localStorage.setItem('cart', JSON.stringify(cart));
                 updateCartCount();
                 
-                // Close modal if open
                 document.getElementById('productModal').classList.remove('active');
                 
-                // Open cart
                 openCart();
                 
                 showNotification(`${product.name} added to cart!`);
             });
         }
 
-        // Cart functionality
+        // Cart functionality (YOUR LOGIC)
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
         function updateCartCount() {
@@ -850,25 +742,25 @@
         }
 
         function showNotification(message) {
-            // Create notification element
             const notification = document.createElement('div');
+            notification.className = 'notification';
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: var(--success);
+                background: #008805; 
                 color: white;
                 padding: 15px 20px;
                 border-radius: 4px;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.2);
                 z-index: 10000;
                 transition: all 0.3s;
+                font-size: 14px;
             `;
             notification.textContent = message;
             
             document.body.appendChild(notification);
             
-            // Remove after 3 seconds
             setTimeout(() => {
                 notification.style.opacity = '0';
                 setTimeout(() => {
@@ -887,11 +779,14 @@
             
             let total = 0;
             
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #868686; margin-top: 50px;">Your cart is empty!</p>';
+            }
+
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 total += itemTotal;
                 const convertedPrice = convertPrice(item.price);
-                const convertedItemTotal = convertPrice(itemTotal);
                 
                 const cartItem = document.createElement('div');
                 cartItem.className = 'cart-item';
@@ -901,12 +796,12 @@
                         <div class="cart-item-title">${item.name}</div>
                         <div class="cart-item-price">${currencySymbol}${convertedPrice}</div>
                         <div class="cart-item-quantity">
-                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
-                            <input type="text" class="quantity-input" value="${item.quantity}" readonly>
-                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                            <button class="quantity-btn" style="background: #ccc; border: none; padding: 5px; cursor: pointer;" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span class="quantity-input" style="padding: 0 10px;">${item.quantity}</span>
+                            <button class="quantity-btn" style="background: #ccc; border: none; padding: 5px; cursor: pointer;" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
                         </div>
                     </div>
-                    <button class="btn btn-danger" onclick="removeFromCart(${item.id})">
+                    <button class="btn btn-primary" style="background: #e74c3c; padding: 5px 10px; font-size: 12px;" onclick="removeFromCart(${item.id})">
                         <i class="fas fa-trash"></i>
                     </button>
                 `;
@@ -937,6 +832,7 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             loadCart();
             updateCartCount();
+            showNotification(`Item removed from cart!`);
         }
 
         function clearCart() {
@@ -946,14 +842,13 @@
             updateCartCount();
         }
 
-        // Checkout functionality
+        // Checkout functionality (YOUR LOGIC)
         function checkout() {
             if (cart.length === 0) {
                 alert('Your cart is empty!');
                 return;
             }
             
-            // Save current cart as an order in Firebase
             const newOrder = {
                 id: Date.now(),
                 items: [...cart],
@@ -965,7 +860,6 @@
             
             database.ref('orders').push(newOrder);
             
-            // Get checkout URL from Firebase settings
             database.ref('settings/checkoutUrl').once('value').then(snapshot => {
                 const url = snapshot.val();
                 if (url) {
@@ -975,7 +869,6 @@
                 }
             });
             
-            // Clear cart after checkout
             clearCart();
             closeCart();
         }
@@ -1003,7 +896,6 @@
             loadProducts();
             updateCartCount();
             
-            // Load checkout URL from Firebase
             database.ref('settings/checkoutUrl').on('value', snapshot => {
                 if (snapshot.exists()) {
                     checkoutUrl = snapshot.val();
