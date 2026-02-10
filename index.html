@@ -2,204 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>British Mart | Premium Daily Essentials</title>
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="shortcut icon" href="icon.png">
+    <title>Master Admin | Live Pickup Orders</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fdfdfd; }
-        .nav-link { position: relative; transition: 0.3s; }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background: #fff; transition: 0.3s; }
-        .nav-link:hover::after { width: 100%; }
-        .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
-        .product-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .product-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
-        .sale-badge { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(5px); }
-    </style>
 </head>
-<body>
+<body class="bg-slate-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-black text-slate-800 uppercase italic">Live <span class="text-blue-600">Pickup Queue</span></h1>
+            <button onclick="location.href='admin.html'" class="text-sm font-bold text-slate-500 hover:text-blue-600"><i class="fas fa-plus"></i> Back to Add Product</button>
+        </header>
 
-    <nav class="bg-[#1e3a8a] text-white sticky top-0 z-[100] shadow-xl">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-800 tracking-tighter italic flex items-center gap-2">
-                <i class="fas fa-shopping-bag text-blue-300"></i>
-                BRITISH <span class="text-blue-300">MART</span>
+        <div id="order-list" class="space-y-4">
             </div>
-            
-            <div class="hidden md:flex items-center gap-8 font-semibold text-sm">
-                <a href="#" class="nav-link">Home</a>
-                <a href="#shop" class="nav-link">Shop</a>
-                <a href="javascript:void(0)" onclick="toggleModal('sale-modal')" class="text-yellow-400 hover:text-yellow-300">🔥 Flash Sale</a>
-                <a href="javascript:void(0)" onclick="toggleModal('about-modal')" class="nav-link">About Us</a>
-            </div>
-
-            <div class="flex items-center gap-5">
-                <div class="relative cursor-pointer group">
-                    <i class="fas fa-shopping-basket text-xl group-hover:text-blue-200 transition"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold">0</span>
-                </div>
-                <button class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
-            </div>
-        </div>
-    </nav>
-
-    <section class="hero-gradient text-white py-20 relative overflow-hidden">
-        <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between relative z-10">
-            <div class="md:w-1/2 space-y-6">
-                <span class="bg-blue-500/30 text-blue-200 px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase">New Year Collection 2026</span>
-                <h1 class="text-5xl md:text-7xl font-800 leading-tight">Quality Items <br><span class="text-blue-300">Delivered Fast.</span></h1>
-                <p class="text-blue-100 text-lg opacity-80 max-w-md">Your trusted partner for premium household essentials, toys, and snacks. Quality checked, British approved.</p>
-                <div class="flex gap-4">
-                    <a href="#shop" class="bg-white text-blue-900 px-8 py-4 rounded-2xl font-bold hover:bg-blue-50 transition shadow-lg">Start Shopping</a>
-                    <button onclick="toggleModal('about-modal')" class="border border-white/30 px-8 py-4 rounded-2xl font-bold hover:bg-white/10 transition">Learn More</button>
-                </div>
-            </div>
-            <div class="md:w-1/2 mt-12 md:mt-0 flex justify-center">
-                <div class="relative">
-                    <div class="absolute inset-0 bg-blue-400 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-                    <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=600&q=80" class="rounded-3xl shadow-2xl relative z-10 rotate-3 hover:rotate-0 transition duration-500 max-w-sm md:max-w-md" alt="Sale Image">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <main id="shop" class="container mx-auto px-6 py-20">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-            <div>
-                <h2 class="text-3xl font-800 text-slate-800">Explore Inventory</h2>
-                <div class="h-1.5 w-20 bg-blue-600 rounded-full mt-2"></div>
-            </div>
-            <div class="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border">
-                <span class="text-xs font-bold text-slate-400 px-3 uppercase tracking-tighter">Status:</span>
-                <span class="flex items-center gap-2 text-green-600 font-bold text-xs bg-green-50 px-4 py-2 rounded-xl">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Live Master Database
-                </span>
-            </div>
-        </div>
-
-        <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            <div class="col-span-full flex flex-col items-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mb-4"></div>
-                <p class="text-slate-400 font-semibold uppercase tracking-widest text-xs">Syncing British Mart...</p>
-            </div>
-        </div>
-    </main>
-
-    <footer class="bg-slate-900 text-white py-16">
-        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div class="space-y-4">
-                <div class="text-2xl font-800">BRITISH MART</div>
-                <p class="text-slate-400 text-sm">Providing high-quality general items to your doorstep since 2024. Connected via British Master Admin Panel.</p>
-            </div>
-            <div class="space-y-4">
-                <h4 class="font-bold">Quick Links</h4>
-                <ul class="text-slate-400 text-sm space-y-2">
-                    <li><a href="#" class="hover:text-white transition">Order Tracking</a></li>
-                    <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
-                </ul>
-            </div>
-            <div class="space-y-4">
-                <h4 class="font-bold">Contact</h4>
-                <p class="text-slate-400 text-sm">Support: help@britishmart.com</p>
-                <div class="flex gap-4 text-xl">
-                    <i class="fab fa-facebook hover:text-blue-400 cursor-pointer"></i>
-                    <i class="fab fa-instagram hover:text-pink-400 cursor-pointer"></i>
-                    <i class="fab fa-whatsapp hover:text-green-400 cursor-pointer"></i>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div id="about-modal" class="modal flex items-center justify-center">
-        <div class="bg-white p-10 rounded-3xl max-w-lg w-full m-4 shadow-2xl relative">
-            <button onclick="toggleModal('about-modal')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800"><i class="fas fa-times text-xl"></i></button>
-            <h2 class="text-3xl font-800 text-blue-900 mb-4">About British Mart</h2>
-            <p class="text-slate-600 leading-relaxed mb-6">Welcome to British Mart! We are a state-of-the-art general store that uses AI-driven inventory management to provide you with the best products at unbeatable PKR prices. From biscuits to high-end toys, every item is quality-vetted.</p>
-            <button onclick="toggleModal('about-modal')" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold">Close</button>
-        </div>
-    </div>
-
-    <div id="sale-modal" class="modal flex items-center justify-center">
-        <div class="bg-red-600 p-10 rounded-3xl max-w-lg w-full m-4 shadow-2xl relative text-white text-center">
-            <button onclick="toggleModal('sale-modal')" class="absolute top-6 right-6 text-white/50 hover:text-white"><i class="fas fa-times text-xl"></i></button>
-            <div class="sale-badge text-6xl mb-4 italic font-900">SALE!</div>
-            <h2 class="text-3xl font-bold mb-2">Up to 40% OFF</h2>
-            <p class="text-red-100 mb-8 font-medium">Limited time offers on all Biscuit and Toy categories. Shop before the timer runs out!</p>
-            <a href="#shop" onclick="toggleModal('sale-modal')" class="inline-block bg-white text-red-600 px-10 py-4 rounded-2xl font-bold shadow-xl">CLAIM DEALS</a>
-        </div>
     </div>
 
     <script>
-        // --- 1. FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyBae3etr-vCLIiGSw0WLtGpfczxYzqPuIU",
             authDomain: "biritishmart-d5030.firebaseapp.com",
-            databaseURL: "https://biritishmart-d5030-default-rtdb.firebaseio.com",
             projectId: "biritishmart-d5030",
-            storageBucket: "biritishmart-d5030.firebasestorage.app",
-            messagingSenderId: "61858161397",
             appId: "1:61858161397:web:ff77f535aafac9dee65bbc"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Modal Logic
-        function toggleModal(id) {
-            const m = document.getElementById(id);
-            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        // Real-time Fetcher
-        function syncStore() {
-            const container = document.getElementById('product-container');
-            db.collection("products").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-                container.innerHTML = "";
-                if (snapshot.empty) {
-                    container.innerHTML = `<div class="col-span-full text-center py-20 text-slate-400">No products found in Mart.</div>`;
-                    return;
-                }
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const img = data.imageUrl || "https://via.placeholder.com/400";
-                    const price = data.price || "0";
-                    
-                    const card = `
-                        <div class="product-card bg-white rounded-[2rem] overflow-hidden border border-slate-100 flex flex-col h-full">
-                            <div class="h-60 overflow-hidden relative group">
-                                <img src="${img}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-blue-700 uppercase tracking-widest shadow-sm">${data.category || 'General'}</div>
-                            </div>
-                            <div class="p-6 flex flex-col flex-1">
-                                <h3 class="font-bold text-slate-800 text-lg mb-2">${data.name}</h3>
-                                <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed flex-1">${data.description || ''}</p>
-                                <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
-                                    <div class="flex flex-col">
-                                        <span class="text-[10px] text-slate-400 font-bold uppercase">Price</span>
-                                        <span class="text-xl font-800 text-blue-900">Rs. ${price.toString().replace('Rs.', '').replace('PKR', '').trim()}</span>
-                                    </div>
-                                    <button class="bg-blue-600 text-white p-3 rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition active:scale-95">
-                                        <i class="fas fa-cart-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
+        db.collection("orders").orderBy("time", "desc").onSnapshot(snap => {
+            const list = document.getElementById('order-list');
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const o = doc.data();
+                list.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center animate-fade-in">
+                        <div>
+                            <span class="text-[10px] font-black bg-blue-100 text-blue-700 px-3 py-1 rounded-full uppercase tracking-widest">${o.token}</span>
+                            <h3 class="text-lg font-bold text-slate-800 mt-2">${o.item}</h3>
+                            <p class="text-sm text-slate-500">${o.price}</p>
                         </div>
-                    `;
-                    container.innerHTML += card;
-                });
+                        <button onclick="completeOrder('${doc.id}')" class="bg-green-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-green-700 transition">COMPLETE</button>
+                    </div>
+                `;
             });
-        }
+        });
 
-        document.addEventListener('DOMContentLoaded', syncStore);
+        function completeOrder(id) {
+            if(confirm("Saaman de diya hai? Order khatam kar dein?")) {
+                db.collection("orders").document(id).delete();
+            }
+        }
     </script>
 </body>
 </html>
