@@ -6,12 +6,14 @@
     <title>Live Orders | British Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background: #f3f4f6; }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-bold: 600; text-transform: uppercase; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .order-row:hover { background: #f8fafc; transition: 0.2s; }
     </style>
@@ -22,8 +24,12 @@
         <div class="w-64 bg-[#1e3a8a] text-white p-6 fixed h-full shadow-2xl">
             <div class="text-2xl font-black mb-10 tracking-tighter">BRITISH <span class="text-blue-300">MASTER</span></div>
             <nav class="flex flex-col gap-4">
-                <a href="admin.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-800 transition"><i class="fas fa-arrow-left"></i> Back to Panel</a>
-                <div class="flex items-center gap-3 p-3 rounded-xl bg-blue-700 font-bold"><i class="fas fa-shopping-cart"></i> Live Orders</div>
+                <a href="admin.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-800 transition">
+                    <i class="fas fa-arrow-left"></i> Back to Panel
+                </a>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-blue-700 font-bold">
+                    <i class="fas fa-shopping-cart"></i> Live Orders
+                </div>
             </nav>
         </div>
 
@@ -31,10 +37,10 @@
             <div class="flex justify-between items-center mb-10">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800">Live Order Feed</h1>
-                    <p class="text-gray-500 text-sm">Real-time incoming requests from British Mart</p>
+                    <p class="text-gray-500 text-sm">Incoming requests from British Mart (Real-time)</p>
                 </div>
                 <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200">
-                    <span class="text-xs font-bold text-green-600 animate-pulse">● LIVE CONNECTION</span>
+                    <span id="connection-status" class="text-xs font-bold text-orange-500 animate-pulse">● CONNECTING...</span>
                 </div>
             </div>
 
@@ -62,8 +68,18 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
-        const firebaseConfig = { apiKey: "xxx", projectId: "british-mart" };
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDTdQRntlL10WMPBEbb5_9jp0Kc89fX8Y",
+            authDomain: "legendlfestyle.firebaseapp.com",
+            databaseURL: "https://legendlfestyle-default-rtdb.firebaseio.com",
+            projectId: "legendlfestyle",
+            storageBucket: "legendlfestyle.firebasestorage.app",
+            messagingSenderId: "1078539571802",
+            appId: "1:1078539571802:web:3ff1d6197ad72f94d73e63"
+        };
+
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -71,8 +87,13 @@
         function startOrderSync() {
             const list = document.getElementById('orders-list');
             const emptyState = document.getElementById('no-orders');
+            const statusIndicator = document.getElementById('connection-status');
 
+            // Listen to 'orders' collection
             db.collection("orders").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                statusIndicator.innerText = "● LIVE CONNECTION";
+                statusIndicator.className = "text-xs font-bold text-green-600 animate-pulse";
+
                 if (snapshot.empty) {
                     emptyState.classList.remove('hidden');
                     list.innerHTML = "";
@@ -86,15 +107,18 @@
                     const order = doc.data();
                     const orderId = doc.id;
 
+                    // Building the row
                     const rowHTML = `
                         <tr class="order-row border-b border-gray-50">
                             <td class="px-6 py-4">
-                                <div class="font-bold text-gray-800">${order.customerName}</div>
-                                <div class="text-xs text-gray-500">${order.phone}</div>
+                                <div class="font-bold text-gray-800">${order.customerName || 'Anonymous'}</div>
+                                <div class="text-xs text-gray-500">${order.phone || 'No Phone'}</div>
                             </td>
-                            <td class="px-6 py-4 font-medium text-blue-600">${order.product}</td>
-                            <td class="px-6 py-4 font-bold text-gray-900">£${order.amount}</td>
-                            <td class="px-6 py-4 text-xs text-gray-500 max-w-[200px] truncate">${order.address}</td>
+                            <td class="px-6 py-4 font-medium text-blue-600">${order.product || 'Unknown Item'}</td>
+                            <td class="px-6 py-4 font-bold text-gray-900">£${order.amount || '0'}</td>
+                            <td class="px-6 py-4 text-xs text-gray-500 max-w-[200px] truncate" title="${order.address}">
+                                ${order.address || 'No Address'}
+                            </td>
                             <td class="px-6 py-4">
                                 <span class="status-badge status-pending">New Order</span>
                             </td>
@@ -107,13 +131,21 @@
                     `;
                     list.innerHTML += rowHTML;
                 });
+            }, (error) => {
+                console.error("Firebase Error:", error);
+                statusIndicator.innerText = "● CONNECTION FAILED";
+                statusIndicator.className = "text-xs font-bold text-red-600";
             });
         }
 
-        // Delete Logic
+        // Delete Logic (Delivery complete)
         async function deleteOrder(id) {
-            if(confirm("Confirm delivery completion? This will remove the order.")) {
-                await db.collection("orders").doc(id).delete();
+            if(confirm("Confirm delivery completion? This will remove the order from live feed.")) {
+                try {
+                    await db.collection("orders").doc(id).delete();
+                } catch (e) {
+                    alert("Error removing order: " + e.message);
+                }
             }
         }
 
