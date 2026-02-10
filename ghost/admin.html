@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>British Mart | Secure Master Admin</title>
+    <title>British Mart | Master Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,16 +11,16 @@
         body { font-family: 'Inter', sans-serif; background: #f3f4f6; color: #1f2937; }
         .sidebar { background: #1e3a8a; height: 100vh; position: fixed; width: 260px; color: white; }
         .main-content { margin-left: 260px; padding: 40px; }
-        .glass-card { background: white; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .glass-card { background: white; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .tab-btn { transition: 0.3s; border-bottom: 2px solid transparent; }
+        .active-tab { border-bottom: 2px solid #1e3a8a; color: #1e3a8a; font-weight: bold; }
         #ai-loader { display: none; }
-        .ai-btn { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); transition: 0.3s; }
-        .ai-btn:hover { opacity: 0.9; transform: scale(1.02); }
     </style>
 </head>
 <body>
 
     <div class="sidebar p-6 flex flex-col gap-8">
-        <div class="text-2xl font-black tracking-tighter italic">BRITISH <span class="text-blue-300">MASTER</span></div>
+        <div class="text-2xl font-black tracking-tighter italic border-b border-blue-700 pb-4">BRITISH <span class="text-blue-300">MASTER</span></div>
         <nav class="flex flex-col gap-3">
             <button onclick="location.href='inventory.html'" class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-800 transition text-sm"><i class="fas fa-boxes"></i> Inventory</button>
             <button class="flex items-center gap-3 p-4 rounded-2xl bg-blue-700 font-bold text-sm shadow-lg"><i class="fas fa-plus-circle"></i> Add Product</button>
@@ -29,56 +29,84 @@
     </div>
 
     <div class="main-content">
-        <section class="max-w-5xl mx-auto">
+        <section class="max-w-6xl mx-auto">
             <header class="mb-10 flex justify-between items-center">
                 <div>
                     <h1 class="text-3xl font-black text-slate-800">Product Architect</h1>
-                    <p class="text-slate-500">Cloud-connected via Hugging Face Space</p>
+                    <p class="text-slate-500 text-sm">Configure and deploy items to British Mart</p>
                 </div>
-                <div class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> SECURE BRIDGE ACTIVE
+                <div class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">
+                    Currency: PKR (Rs.)
                 </div>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <div class="glass-card p-10 space-y-6">
+                    <h3 class="text-lg font-bold border-b pb-4">Product Information</h3>
                     <div class="space-y-4">
-                        <input type="text" id="p-name" placeholder="Item Name (e.g. Premium Toy Bear)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="p-name" placeholder="Product Name (e.g. Chocolate Biscuit)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                        
                         <div class="grid grid-cols-2 gap-4">
-                            <input type="number" id="p-price" placeholder="Price £" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                            <select id="p-cat" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                                <option>Grocery</option><option>Toys</option><option>Stationary</option><option>Household</option>
-                            </select>
+                            <div class="relative">
+                                <span class="absolute left-4 top-4 text-gray-400">Rs.</span>
+                                <input type="number" id="p-price" placeholder="Price" class="w-full p-4 pl-12 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                            </div>
+                            <input type="text" id="p-cat" list="category-suggestions" placeholder="Category (Type/Select)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                            <datalist id="category-suggestions">
+                                <option value="Biscuits">
+                                <option value="Toys">
+                                <option value="Stationary">
+                                <option value="Household">
+                                <option value="Electronics">
+                                <option value="Snacks">
+                                <option value="Pillows">
+                                </datalist>
                         </div>
-                        <textarea id="p-desc" placeholder="Product details..." class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 h-32"></textarea>
+                        
+                        <textarea id="p-desc" placeholder="Write product description here..." class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 h-32"></textarea>
                     </div>
-                    <button onclick="uploadViaSpace()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-black transition-all shadow-xl">DEPLOY TO STORE</button>
+                    <button onclick="uploadViaSpace()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-black transition-all shadow-xl">
+                        <i class="fas fa-rocket mr-2"></i> DEPLOY TO MART
+                    </button>
                 </div>
 
                 <div class="glass-card p-10">
-                    <h3 class="font-bold text-xs uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-                        <i class="fas fa-microchip"></i> Visual AI Processor
-                    </h3>
-                    
-                    <div id="image-box" class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 relative group transition-all hover:bg-blue-50">
-                        <img id="preview-img" class="hidden w-full h-full object-cover rounded-[20px]">
-                        <div id="placeholder" class="text-center group-hover:scale-110 transition">
-                            <i class="fas fa-camera text-4xl text-slate-300 mb-2"></i>
-                            <p class="text-slate-400 text-xs font-medium uppercase">Select Raw Photo</p>
-                        </div>
-                        <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewFile()">
+                    <div class="flex gap-6 mb-8 border-b">
+                        <button onclick="switchMediaTab('direct')" id="tab-direct" class="tab-btn pb-4 active-tab text-sm">Direct Upload</button>
+                        <button onclick="switchMediaTab('ai')" id="tab-ai" class="tab-btn pb-4 text-sm text-gray-400">AI Magic Editor</button>
                     </div>
 
-                    <div class="mt-8 space-y-4">
+                    <div id="media-direct" class="space-y-6">
+                        <div class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 relative group transition-all hover:bg-blue-50">
+                            <img id="direct-preview" class="hidden w-full h-full object-cover rounded-[22px]">
+                            <div id="direct-placeholder" class="text-center">
+                                <i class="fas fa-upload text-4xl text-slate-300 mb-2"></i>
+                                <p class="text-slate-400 text-xs font-medium">Click to Upload Real Image</p>
+                            </div>
+                            <input type="file" id="direct-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage('direct')">
+                        </div>
+                        <p class="text-[10px] text-gray-400 italic">Recommended: 1:1 Square aspect ratio for Mart display.</p>
+                    </div>
+
+                    <div id="media-ai" class="hidden space-y-6">
+                        <div class="h-64 border-2 border-dashed border-purple-200 rounded-3xl flex flex-col items-center justify-center bg-purple-50/30 relative">
+                            <img id="ai-preview" class="hidden w-full h-full object-cover rounded-[22px]">
+                            <div id="ai-placeholder" class="text-center">
+                                <i class="fas fa-wand-sparkles text-4xl text-purple-300 mb-2"></i>
+                                <p class="text-purple-400 text-xs font-medium uppercase tracking-tighter">Upload for AI Transformation</p>
+                            </div>
+                            <input type="file" id="ai-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage('ai')">
+                        </div>
+
                         <div class="relative">
-                            <input type="text" id="ai-command" placeholder="Describe transformation..." class="w-full p-5 pr-16 rounded-2xl border-2 border-slate-100 outline-none focus:border-purple-400 text-sm font-medium">
-                            <button onclick="runAIEdit()" class="absolute right-2 top-2 w-12 h-12 ai-btn text-white rounded-xl shadow-lg">
-                                <i class="fas fa-wand-magic-sparkles"></i>
+                            <input type="text" id="ai-command" placeholder="Change BG, add lighting..." class="w-full p-4 pr-14 rounded-2xl border-2 border-slate-100 outline-none focus:border-purple-400 text-xs">
+                            <button onclick="runAIEdit()" class="absolute right-2 top-2 w-10 h-10 bg-purple-600 text-white rounded-xl shadow-lg">
+                                <i class="fas fa-play text-xs"></i>
                             </button>
                         </div>
                         
-                        <div id="ai-loader" class="text-center p-3 rounded-xl bg-purple-50 text-[10px] text-purple-600 font-bold uppercase tracking-tighter animate-pulse">
-                             Contacting Space Engine...
+                        <div id="ai-loader" class="text-center p-2 rounded-xl bg-purple-100 text-[10px] text-purple-600 font-bold animate-pulse">
+                             PROCESSING VIA HF SPACE...
                         </div>
                     </div>
                 </div>
@@ -87,71 +115,80 @@
     </div>
 
     <script>
-        // --- CENTRAL SPACE URL ---
-        // Ghost bhai, apna Hugging Face Space ka direct URL yahan daalein
         const SPACE_BRIDGE_URL = "https://elitegamer859650-biritishmart-ai.hf.space";
+        let activeMediaMode = 'direct';
 
-        function previewFile() {
-            const preview = document.getElementById('preview-img');
-            const file = document.getElementById('file-input').files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                preview.src = reader.result;
-                preview.classList.remove('hidden');
-                document.getElementById('placeholder').classList.add('hidden');
+        function switchMediaTab(mode) {
+            activeMediaMode = mode;
+            document.getElementById('media-direct').classList.toggle('hidden', mode !== 'direct');
+            document.getElementById('media-ai').classList.toggle('hidden', mode !== 'ai');
+            document.getElementById('tab-direct').className = mode === 'direct' ? 'tab-btn pb-4 active-tab text-sm' : 'tab-btn pb-4 text-sm text-gray-400';
+            document.getElementById('tab-ai').className = mode === 'ai' ? 'tab-btn pb-4 active-tab text-sm' : 'tab-btn pb-4 text-sm text-gray-400';
+        }
+
+        function previewImage(mode) {
+            const input = document.getElementById(mode + '-file');
+            const preview = document.getElementById(mode + '-preview');
+            const placeholder = document.getElementById(mode + '-placeholder');
+            
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
             }
-            if (file) reader.readAsDataURL(file);
         }
 
         async function runAIEdit() {
             const command = document.getElementById('ai-command').value;
-            const fileInput = document.getElementById('file-input');
+            const fileInput = document.getElementById('ai-file');
             const loader = document.getElementById('ai-loader');
-            const preview = document.getElementById('preview-img');
+            const preview = document.getElementById('ai-preview');
 
-            if (!fileInput.files[0] || !command) return alert("Missing data!");
-
+            if (!fileInput.files[0] || !command) return alert("Upload image and type command!");
             loader.style.display = "block";
 
             try {
-                // Sending image to your HF Space (Proxy)
                 const formData = new FormData();
                 formData.append("image", fileInput.files[0]);
                 formData.append("prompt", command);
 
-                const res = await fetch(`${SPACE_BRIDGE_URL}/edit-image`, {
-                    method: "POST",
-                    body: formData
-                });
-
+                const res = await fetch(`${SPACE_BRIDGE_URL}/edit-image`, { method: "POST", body: formData });
                 const blob = await res.blob();
                 preview.src = URL.createObjectURL(blob);
-                alert("AI Transformation Complete!");
+                alert("AI Magic Success!");
             } catch (err) {
-                alert("Space Bridge Error: Check if your Space is RUNNING.");
-            } finally {
-                loader.style.display = "none";
-            }
+                alert("AI Space Offline!");
+            } finally { loader.style.display = "none"; }
         }
 
         async function uploadViaSpace() {
-            const data = {
-                name: document.getElementById('p-name').value,
-                price: document.getElementById('p-price').value,
-                cat: document.getElementById('p-cat').value,
-                desc: document.getElementById('p-desc').value
-            };
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const cat = document.getElementById('p-cat').value;
+            const desc = document.getElementById('p-desc').value;
+            
+            const fileInput = document.getElementById(activeMediaMode + '-file');
+
+            if (!name || !price || !fileInput.files[0]) return alert("Name, Price and Image required!");
+
+            const data = { name, price: price + " PKR", category: cat, description: desc };
 
             try {
+                // First upload product details, then handle image sync via Space
                 const res = await fetch(`${SPACE_BRIDGE_URL}/upload-product`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 });
                 
-                if(res.ok) alert("Product Pushed to British Mart via Secure Bridge!");
+                if(res.ok) alert("Product '" + name + "' is now LIVE on British Mart!");
             } catch (err) {
-                alert("Upload failed. Bridge is offline.");
+                alert("Connection lost. Try again.");
             }
         }
     </script>
