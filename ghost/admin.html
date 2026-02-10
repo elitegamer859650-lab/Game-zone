@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>British Mart | Master Admin Fixed</title>
+    <title>British Mart | Master Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background: #f3f4f6; }
         .sidebar { background: #1e3a8a; height: 100vh; position: fixed; width: 260px; color: white; }
         .main-content { margin-left: 260px; padding: 40px; }
         .glass-card { background: white; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        #upload-loader { display: none; }
+        #ai-loader, #upload-loader { display: none; }
+        .ai-zone { border: 2px dashed #8b5cf6; background: #f5f3ff; }
     </style>
 </head>
 <body>
@@ -29,38 +33,54 @@
     <div class="main-content">
         <section class="max-w-6xl mx-auto">
             <header class="mb-10 flex justify-between items-center">
-                <h1 class="text-3xl font-black text-slate-800">Product Architect <span class="text-sm font-normal text-blue-500">(Bridge Mode)</span></h1>
-                <div class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-xs font-bold uppercase">Rs. PKR Enabled</div>
+                <h1 class="text-3xl font-black text-slate-800">Product Architect</h1>
+                <div class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-xs font-bold">FIREBASE DIRECT ACCESS</div>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <div class="glass-card p-10 space-y-6">
+                    <h3 class="font-bold text-gray-700 uppercase text-xs tracking-widest">Product Details</h3>
                     <div class="space-y-4">
-                        <input type="text" id="p-name" placeholder="Product Name" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="p-name" placeholder="Item Name" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
                         <div class="grid grid-cols-2 gap-4">
-                            <input type="number" id="p-price" placeholder="Price (Rs.)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-                            <input type="text" id="p-cat" list="category-suggestions" placeholder="Category" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                            <datalist id="category-suggestions">
-                                <option value="Biscuits"><option value="Toys"><option value="Stationary"><option value="Household">
-                            </datalist>
+                            <input type="number" id="p-price" placeholder="Price (PKR)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                            <input type="text" id="p-cat" placeholder="Category (Biscuit, Toys...)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <textarea id="p-desc" placeholder="Product description..." class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 h-32"></textarea>
                     </div>
                     
-                    <button id="main-upload-btn" onclick="uploadViaSpace()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3">
-                        <span id="btn-text">PUSH TO SPACE BRIDGE</span>
+                    <button id="main-upload-btn" onclick="uploadEverything()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3">
+                        <span id="btn-text">DEPLOY TO BRITISH MART</span>
                         <div id="upload-loader" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
                     </button>
                 </div>
 
-                <div class="glass-card p-10 flex flex-col items-center justify-center">
-                    <div class="h-64 w-full border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 relative group">
-                        <img id="direct-preview" class="hidden w-full h-full object-cover rounded-[22px]">
-                        <div id="direct-placeholder" class="text-center">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-slate-300 mb-2"></i>
-                            <p class="text-slate-400 text-xs font-medium uppercase">Select Image</p>
+                <div class="glass-card p-10 space-y-8">
+                    <div>
+                        <h3 class="font-bold text-gray-700 uppercase text-xs tracking-widest mb-4">Visual Engine</h3>
+                        <div class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 relative group overflow-hidden">
+                            <img id="final-preview" class="hidden w-full h-full object-cover rounded-[22px]">
+                            <div id="placeholder" class="text-center">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-slate-300 mb-2"></i>
+                                <p class="text-slate-400 text-xs font-medium uppercase">Select Raw Image</p>
+                            </div>
+                            <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewLocalFile()">
                         </div>
-                        <input type="file" id="direct-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage()">
+                    </div>
+
+                    <div class="ai-zone p-6 rounded-[2rem] space-y-4">
+                        <label class="text-[10px] font-black text-purple-600 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fas fa-magic"></i> AI Magic (Hugging Face)
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="ai-prompt" placeholder="E.g. Add studio lighting and clean BG" class="w-full p-4 pr-14 rounded-xl border-none outline-none focus:ring-2 focus:ring-purple-400 text-sm">
+                            <button onclick="runAiMagic()" class="absolute right-2 top-2 bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700">
+                                <i class="fas fa-wand-sparkles"></i>
+                            </button>
+                        </div>
+                        <div id="ai-loader" class="text-center text-[10px] text-purple-500 font-bold animate-pulse italic">
+                            Space is architecting your image...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -68,60 +88,101 @@
     </div>
 
     <script>
-        // CENTRAL BRIDGE URL (Aapka Space URL)
-        const SPACE_BRIDGE_URL = "https://elitegamer859650-biritishmart-ai.hf.space";
-        let selectedFile = null;
+        // 1. FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBae3etr-vCLIiGSw0WLtGpfczxYzqPuIU",
+            authDomain: "biritishmart-d5030.firebaseapp.com",
+            databaseURL: "https://biritishmart-d5030-default-rtdb.firebaseio.com",
+            projectId: "biritishmart-d5030",
+            storageBucket: "biritishmart-d5030.firebasestorage.app",
+            messagingSenderId: "61858161397",
+            appId: "1:61858161397:web:ff77f535aafac9dee65bbc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        function previewImage() {
-            const input = document.getElementById('direct-file');
-            const preview = document.getElementById('direct-preview');
-            const placeholder = document.getElementById('direct-placeholder');
-            if (input.files && input.files[0]) {
-                selectedFile = input.files[0];
+        const HF_URL = "https://elitegamer859650-biritishmart-ai.hf.space";
+        let activeBlob = null;
+
+        // Preview local image
+        function previewLocalFile() {
+            const file = document.getElementById('file-input').files[0];
+            if (file) {
+                activeBlob = file;
                 const reader = new FileReader();
-                reader.onload = e => { preview.src = e.target.result; preview.classList.remove('hidden'); placeholder.classList.add('hidden'); }
-                reader.readAsDataURL(input.files[0]);
+                reader.onload = e => {
+                    document.getElementById('final-preview').src = e.target.result;
+                    document.getElementById('final-preview').classList.remove('hidden');
+                    document.getElementById('placeholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
             }
         }
 
-        async function uploadViaSpace() {
-            const name = document.getElementById('p-name').value.trim();
-            const price = document.getElementById('p-price').value;
-            const cat = document.getElementById('p-cat').value.trim();
-            const desc = document.getElementById('p-desc').value.trim();
+        // --- AI MAGIC LOGIC ---
+        async function runAiMagic() {
+            const prompt = document.getElementById('ai-prompt').value;
+            const file = document.getElementById('file-input').files[0];
+            if(!file || !prompt) return alert("Select image and type command first!");
 
-            if (!name || !price || !selectedFile) return alert("Fill all details!");
+            document.getElementById('ai-loader').style.display = "block";
+            
+            try {
+                const fd = new FormData();
+                fd.append("image", file);
+                fd.append("prompt", prompt);
+
+                const res = await fetch(`${HF_URL}/edit-image`, { method: "POST", body: fd });
+                if(!res.ok) throw new Error("AI Space error");
+
+                activeBlob = await res.blob();
+                document.getElementById('final-preview').src = URL.createObjectURL(activeBlob);
+                alert("AI Editing Done!");
+            } catch (e) {
+                alert("AI Space Error: Check if Space is 'Running' and CORS is enabled.");
+            } finally {
+                document.getElementById('ai-loader').style.display = "none";
+            }
+        }
+
+        // --- DIRECT FIREBASE UPLOAD LOGIC ---
+        async function uploadEverything() {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const cat = document.getElementById('p-cat').value;
+            const desc = document.getElementById('p-desc').value;
+
+            if(!name || !price || !activeBlob) return alert("Fill all details!");
 
             document.getElementById('upload-loader').style.display = "block";
-            document.getElementById('btn-text').innerText = "ARCHITECTING...";
+            document.getElementById('btn-text').innerText = "UPLOADING...";
 
             try {
-                // Sending Data to Space Bridge
-                const formData = new FormData();
-                formData.append("image", selectedFile);
-                formData.append("name", name);
-                formData.append("price", price + " Rs.");
-                formData.append("category", cat);
-                formData.append("description", desc);
+                // 1. Storage Upload
+                const fileName = `products/${Date.now()}.png`;
+                const ref = storage.ref(fileName);
+                await ref.put(activeBlob);
+                const url = await ref.getDownloadURL();
 
-                const res = await fetch(`${SPACE_BRIDGE_URL}/upload-product`, {
-                    method: "POST",
-                    body: formData
+                // 2. Firestore Save
+                await db.collection("products").add({
+                    name,
+                    price: price + " PKR",
+                    category: cat,
+                    description: desc,
+                    imageUrl: url,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                if (res.ok) {
-                    alert("MISMATCH FIXED: Product is now Live via Bridge!");
-                    location.reload();
-                } else {
-                    throw new Error("Space Bridge Rejected the Request");
-                }
-
-            } catch (err) {
-                console.error(err);
-                alert("Mismatch Error: Check if your HF Space is Running.");
+                alert("Product is LIVE on British Mart!");
+                location.reload();
+            } catch (e) {
+                console.error(e);
+                alert("Upload Failed: " + e.message);
             } finally {
                 document.getElementById('upload-loader').style.display = "none";
-                document.getElementById('btn-text').innerText = "PUSH TO SPACE BRIDGE";
+                document.getElementById('btn-text').innerText = "DEPLOY TO BRITISH MART";
             }
         }
     </script>
