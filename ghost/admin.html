@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>British Mart | Master Admin</title>
+    <title>British Mart | Master Admin FIX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #f3f4f6; color: #1f2937; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f3f4f6; }
         .sidebar { background: #1e3a8a; height: 100vh; position: fixed; width: 260px; color: white; }
         .main-content { margin-left: 260px; padding: 40px; }
         .glass-card { background: white; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .tab-btn { transition: 0.3s; border-bottom: 2px solid transparent; }
+        #upload-loader { display: none; }
         .active-tab { border-bottom: 2px solid #1e3a8a; color: #1e3a8a; font-weight: bold; }
-        #ai-loader, #upload-loader { display: none; }
-        .ai-glow { box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); border-color: #a78bfa !important; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar p-6 flex flex-col gap-8">
+    <div class="sidebar p-6 flex flex-col gap-8 shadow-2xl">
         <div class="text-2xl font-black tracking-tighter italic border-b border-blue-700 pb-4">BRITISH <span class="text-blue-300">MASTER</span></div>
         <nav class="flex flex-col gap-3">
             <button onclick="location.href='inventory.html'" class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-800 transition text-sm"><i class="fas fa-boxes"></i> Inventory</button>
@@ -35,77 +33,34 @@
     <div class="main-content">
         <section class="max-w-6xl mx-auto">
             <header class="mb-10 flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-black text-slate-800">Product Architect</h1>
-                    <p class="text-slate-500 text-sm italic">Direct Firebase Integration v3.0</p>
-                </div>
-                <div class="text-right">
-                    <span class="bg-green-100 text-green-700 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Currency: PKR (Rs.)</span>
-                </div>
+                <h1 class="text-3xl font-black text-slate-800">Product Architect <span class="text-sm font-normal text-red-500">(Fixed)</span></h1>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <div class="glass-card p-10 space-y-6">
-                    <h3 class="text-lg font-bold border-b pb-4 flex items-center gap-2"><i class="fas fa-info-circle text-blue-600"></i> Essentials</h3>
                     <div class="space-y-4">
-                        <input type="text" id="p-name" placeholder="Product Name (e.g. Kurkure Snacks)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                        
+                        <input type="text" id="p-name" placeholder="Product Name" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="relative">
-                                <span class="absolute left-4 top-4 text-gray-400 text-sm">Rs.</span>
-                                <input type="number" id="p-price" placeholder="Price" class="w-full p-4 pl-12 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-                            </div>
-                            <input type="text" id="p-cat" list="category-suggestions" placeholder="Category (e.g. Biscuits)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                            <datalist id="category-suggestions">
-                                <option value="Biscuits"><option value="Toys"><option value="Stationary"><option value="Household"><option value="Snacks">
-                            </datalist>
+                            <input type="number" id="p-price" placeholder="Price (PKR)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                            <input type="text" id="p-cat" list="category-suggestions" placeholder="Category" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
-                        
                         <textarea id="p-desc" placeholder="Product description..." class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 h-32"></textarea>
                     </div>
                     
                     <button id="main-upload-btn" onclick="uploadToFirebase()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3">
-                        <span id="btn-text">DEPLOY TO BRITISH MART</span>
+                        <span id="btn-text">DEPLOY TO MART</span>
                         <div id="upload-loader" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
                     </button>
                 </div>
 
                 <div class="glass-card p-10">
-                    <div class="flex gap-6 mb-8 border-b">
-                        <button onclick="switchMediaTab('direct')" id="tab-direct" class="tab-btn pb-4 active-tab text-sm">Direct Upload</button>
-                        <button onclick="switchMediaTab('ai')" id="tab-ai" class="tab-btn pb-4 text-sm text-gray-400">AI Magic Editor</button>
-                    </div>
-
-                    <div id="media-direct" class="space-y-6">
-                        <div class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 relative group">
-                            <img id="direct-preview" class="hidden w-full h-full object-cover rounded-[22px]">
-                            <div id="direct-placeholder" class="text-center">
-                                <i class="fas fa-image text-4xl text-slate-300 mb-2"></i>
-                                <p class="text-slate-400 text-xs font-medium uppercase">Select Product Photo</p>
-                            </div>
-                            <input type="file" id="direct-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage('direct')">
+                    <div class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 relative group">
+                        <img id="direct-preview" class="hidden w-full h-full object-cover rounded-[22px]">
+                        <div id="direct-placeholder" class="text-center">
+                            <i class="fas fa-image text-4xl text-slate-300 mb-2"></i>
+                            <p class="text-slate-400 text-xs font-medium uppercase">Select Photo</p>
                         </div>
-                    </div>
-
-                    <div id="media-ai" class="hidden space-y-6">
-                        <div class="h-64 border-2 border-dashed border-purple-200 rounded-3xl flex flex-col items-center justify-center bg-purple-50/20 relative ai-glow">
-                            <img id="ai-preview" class="hidden w-full h-full object-cover rounded-[22px]">
-                            <div id="ai-placeholder" class="text-center">
-                                <i class="fas fa-wand-magic-sparkles text-4xl text-purple-300 mb-2"></i>
-                                <p class="text-purple-400 text-xs font-medium uppercase">Upload & Command AI</p>
-                            </div>
-                            <input type="file" id="ai-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage('ai')">
-                        </div>
-
-                        <div class="relative">
-                            <input type="text" id="ai-command" placeholder="Prompt: Add luxury lighting..." class="w-full p-4 pr-14 rounded-2xl border-2 border-slate-100 outline-none focus:border-purple-400 text-xs font-semibold">
-                            <button onclick="runAIEdit()" class="absolute right-2 top-2 w-10 h-10 bg-purple-600 text-white rounded-xl shadow-lg hover:bg-purple-700 transition">
-                                <i class="fas fa-bolt text-xs"></i>
-                            </button>
-                        </div>
-                        <div id="ai-loader" class="text-center text-[10px] text-purple-600 font-black animate-pulse uppercase tracking-widest">
-                             AI is architecting your image...
-                        </div>
+                        <input type="file" id="direct-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage()">
                     </div>
                 </div>
             </div>
@@ -113,7 +68,6 @@
     </div>
 
     <script>
-        // --- 1. FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyBae3etr-vCLIiGSw0WLtGpfczxYzqPuIU",
             authDomain: "biritishmart-d5030.firebaseapp.com",
@@ -127,84 +81,73 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        const HF_SPACE_URL = "https://elitegamer859650-biritishmart-ai.hf.space";
-        let activeMediaMode = 'direct';
-        let finalImageBlob = null;
+        let finalImageFile = null;
 
-        function switchMediaTab(mode) {
-            activeMediaMode = mode;
-            document.getElementById('media-direct').classList.toggle('hidden', mode !== 'direct');
-            document.getElementById('media-ai').classList.toggle('hidden', mode !== 'ai');
-            document.getElementById('tab-direct').className = mode === 'direct' ? 'tab-btn pb-4 active-tab text-sm' : 'tab-btn pb-4 text-sm text-gray-400';
-            document.getElementById('tab-ai').className = mode === 'ai' ? 'tab-btn pb-4 active-tab text-sm' : 'tab-btn pb-4 text-sm text-gray-400';
-        }
-
-        function previewImage(mode) {
-            const input = document.getElementById(mode + '-file');
-            const preview = document.getElementById(mode + '-preview');
-            const placeholder = document.getElementById(mode + '-placeholder');
-            const file = input.files[0];
-            if (file) {
-                finalImageBlob = file; // Direct mode uses raw file
+        function previewImage() {
+            const input = document.getElementById('direct-file');
+            const preview = document.getElementById('direct-preview');
+            const placeholder = document.getElementById('direct-placeholder');
+            
+            if (input.files && input.files[0]) {
+                finalImageFile = input.files[0]; 
+                console.log("Image selected:", finalImageFile.name);
                 const reader = new FileReader();
-                reader.onload = e => { preview.src = e.target.result; preview.classList.remove('hidden'); placeholder.classList.add('hidden'); }
-                reader.readAsDataURL(file);
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        async function runAIEdit() {
-            const cmd = document.getElementById('ai-command').value;
-            const file = document.getElementById('ai-file').files[0];
-            if (!file || !cmd) return alert("Select image and type command!");
-            
-            document.getElementById('ai-loader').style.display = "block";
-            try {
-                const fd = new FormData();
-                fd.append("image", file);
-                fd.append("prompt", cmd);
-                const res = await fetch(`${HF_SPACE_URL}/edit-image`, { method: "POST", body: fd });
-                finalImageBlob = await res.blob();
-                document.getElementById('ai-preview').src = URL.createObjectURL(finalImageBlob);
-                alert("AI Magic Successful!");
-            } catch (err) { alert("AI Bridge Offline!"); }
-            finally { document.getElementById('ai-loader').style.display = "none"; }
-        }
-
         async function uploadToFirebase() {
-            const name = document.getElementById('p-name').value;
+            const name = document.getElementById('p-name').value.trim();
             const price = document.getElementById('p-price').value;
-            const cat = document.getElementById('p-cat').value;
-            const desc = document.getElementById('p-desc').value;
+            const cat = document.getElementById('p-cat').value.trim();
+            const desc = document.getElementById('p-desc').value.trim();
 
-            if (!name || !price || !finalImageBlob) return alert("All fields including Image are required!");
+            if (!name || !price || !finalImageFile) {
+                return alert("Please fill Name, Price and select an Image!");
+            }
 
             document.getElementById('upload-loader').style.display = "block";
             document.getElementById('btn-text').innerText = "UPLOADING...";
+            document.getElementById('main-upload-btn').disabled = true;
 
             try {
-                // 1. Upload Image to Firebase Storage
-                const fileName = `products/${Date.now()}.png`;
+                console.log("Starting Storage Upload...");
+                const fileName = `products/${Date.now()}_${finalImageFile.name}`;
                 const storageRef = storage.ref(fileName);
-                await storageRef.put(finalImageBlob);
-                const imageUrl = await storageRef.getDownloadURL();
+                
+                // Upload image
+                const uploadTask = await storageRef.put(finalImageFile);
+                console.log("Image Uploaded! Getting URL...");
+                const imageUrl = await uploadTask.ref.getDownloadURL();
 
-                // 2. Save Data to Firestore
+                console.log("Storage URL received:", imageUrl);
+
+                // Save to Firestore
                 await db.collection("products").add({
-                    name,
-                    price: price + " Rs.",
-                    category: cat,
+                    name: name,
+                    price: price,
+                    category: cat || "General",
                     description: desc,
-                    imageUrl,
+                    imageUrl: imageUrl,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("SUCCESS! '" + name + "' is now live on British Mart.");
+                console.log("Firestore Data Saved!");
+                alert("SUCCESS! Product is now live.");
                 location.reload();
+
             } catch (err) {
-                alert("Upload Error: " + err.message);
+                console.error("FULL ERROR:", err);
+                alert("Upload Failed! Error: " + err.message + "\n\nTip: Check if Firebase Storage Rules are set to 'allow read, write: if true;'");
             } finally {
                 document.getElementById('upload-loader').style.display = "none";
-                document.getElementById('btn-text').innerText = "DEPLOY TO BRITISH MART";
+                document.getElementById('btn-text').innerText = "DEPLOY TO MART";
+                document.getElementById('main-upload-btn').disabled = false;
             }
         }
     </script>
