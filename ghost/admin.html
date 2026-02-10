@@ -3,86 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>British Mart | Master Admin Turbo</title>
+    <title>Master Admin | British Mart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #f3f4f6; }
-        .sidebar { background: #1e3a8a; height: 100vh; position: fixed; width: 260px; color: white; transition: 0.3s; }
-        .main-content { margin-left: 260px; padding: 40px; }
-        .glass-card { background: white; border: 1px solid #e5e7eb; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        #upload-loader { display: none; }
-        .turbo-btn { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); transition: 0.3s; }
-        .turbo-btn:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7fe; }
+        .sidebar { background: #1e3a8a; height: 100vh; position: fixed; width: 280px; color: white; }
+        .main-content { margin-left: 280px; padding: 40px; }
+        .glass-card { background: white; border-radius: 30px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .input-style { width: 100%; padding: 1rem; border-radius: 1rem; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+        #loader { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar p-6 flex flex-col gap-8 shadow-2xl">
-        <div class="text-2xl font-black tracking-tighter italic border-b border-blue-700 pb-4 flex items-center gap-2">
-            <i class="fas fa-bolt text-yellow-400"></i>
-            BRITISH <span class="text-blue-300">MASTER</span>
-        </div>
-        <nav class="flex flex-col gap-3">
-            <button onclick="location.href='inventory.html'" class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-800 transition text-sm"><i class="fas fa-boxes"></i> Inventory</button>
-            <button class="flex items-center gap-3 p-4 rounded-2xl bg-blue-700 font-bold text-sm shadow-lg"><i class="fas fa-plus-circle"></i> Add Product</button>
-            <button onclick="location.href='orders.html'" class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-800 transition text-sm"><i class="fas fa-shopping-cart"></i> Live Orders</button>
+    <div class="sidebar p-8 flex flex-col gap-10 shadow-2xl">
+        <div class="text-3xl font-800 tracking-tighter italic border-b border-blue-700 pb-6">BRITISH <span class="text-blue-300">MASTER</span></div>
+        <nav class="flex flex-col gap-4">
+            <button class="flex items-center gap-4 p-4 rounded-2xl bg-blue-700 font-bold shadow-lg"><i class="fas fa-plus-circle"></i> Add Product</button>
+            <button onclick="location.href='orders.html'" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-blue-800 transition text-sm opacity-80"><i class="fas fa-shopping-cart"></i> Live Orders</button>
         </nav>
     </div>
 
     <div class="main-content">
-        <section class="max-w-6xl mx-auto">
-            <header class="mb-10 flex justify-between items-center">
+        <div class="max-w-5xl mx-auto">
+            <header class="flex justify-between items-center mb-12">
                 <div>
-                    <h1 class="text-3xl font-black text-slate-800 tracking-tight">Turbo Product Architect</h1>
-                    <p class="text-blue-600 font-medium">Cloudinary Direct Upload Active</p>
+                    <h1 class="text-4xl font-800 text-slate-900 tracking-tight">Deploy Inventory</h1>
+                    <p class="text-slate-500 font-medium mt-1">Turbo Cloudinary Engine + Firestore Live</p>
                 </div>
-                <div class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">
-                    Currency: PKR (Rs.)
-                </div>
+                <div class="bg-blue-100 text-blue-700 px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest">PKR (Rs.) Global</div>
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <div class="glass-card p-10 space-y-6">
-                    <div class="space-y-4">
-                        <input type="text" id="p-name" placeholder="Item Name (e.g. Candy Biscuits)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="number" id="p-price" placeholder="Price (Rs.)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-                            <input type="text" id="p-cat" placeholder="Category (e.g. Snacks)" class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <textarea id="p-desc" placeholder="Write item details here..." class="w-full p-4 rounded-2xl border bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 h-32"></textarea>
+                    <input type="text" id="p-name" placeholder="Product Name" class="input-style font-bold">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="p-price" placeholder="Price (Rs.)" class="input-style font-bold text-blue-600">
+                        <input type="text" id="p-cat" placeholder="Category" class="input-style">
                     </div>
+                    <textarea id="p-desc" placeholder="Product Description" class="input-style h-40"></textarea>
                     
-                    <button id="main-upload-btn" onclick="deployTurbo()" class="w-full turbo-btn text-white py-5 rounded-2xl font-black shadow-xl flex items-center justify-center gap-3">
-                        <span id="btn-text">DEPLOY TO MART</span>
-                        <div id="upload-loader" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                    <button id="uploadBtn" onclick="runTurboUpload()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3">
+                        <span id="btnText">PUSH TO BRITISH MART</span>
+                        <div id="loader" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
                     </button>
                 </div>
 
                 <div class="glass-card p-10">
-                    <div id="image-box" class="h-80 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 relative group overflow-hidden">
-                        <img id="final-preview" class="hidden w-full h-full object-cover rounded-[22px]">
-                        <div id="placeholder" class="text-center">
-                            <i class="fas fa-cloud-upload-alt text-5xl text-slate-300 mb-2"></i>
-                            <p class="text-slate-400 text-xs font-bold uppercase">Click to Select Product Image</p>
+                    <div id="uploadBox" class="h-80 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center bg-slate-50 relative overflow-hidden group hover:border-blue-400 transition-all">
+                        <img id="imgPreview" class="hidden w-full h-full object-cover">
+                        <div id="dropText" class="text-center">
+                            <i class="fas fa-cloud-upload-alt text-5xl text-slate-300 mb-4"></i>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Select Product Image</p>
                         </div>
-                        <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewFile()">
+                        <input type="file" id="fileInput" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handlePreview()">
                     </div>
-                    <p class="mt-4 text-[10px] text-gray-400 italic text-center">Images are optimized by Cloudinary for instant loading.</p>
+                    <p class="text-[10px] text-center text-slate-400 mt-6 italic">Turbo Mode: Bypass Space Bridge for instant delivery.</p>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
 
     <script>
-        // 1. FIREBASE CONFIG
+        // --- 1. FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyBae3etr-vCLIiGSw0WLtGpfczxYzqPuIU",
             authDomain: "biritishmart-d5030.firebaseapp.com",
@@ -95,69 +83,77 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. CLOUDINARY CONFIG
-        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/drwhtmufj/image/upload";
-        const CLOUDINARY_UPLOAD_PRESET = "ml_default"; // Ghost bhai, Cloudinary settings mein 'unsigned' preset enable kr len
+        // --- 2. CLOUDINARY CONFIG ---
+        const CLOUD_NAME = "drwhtmufj";
+        const UPLOAD_PRESET = "ml_default"; 
 
         let selectedFile = null;
 
-        function previewFile() {
-            const file = document.getElementById('file-input').files[0];
+        function handlePreview() {
+            const file = document.getElementById('fileInput').files[0];
             if (file) {
                 selectedFile = file;
                 const reader = new FileReader();
                 reader.onload = e => {
-                    document.getElementById('final-preview').src = e.target.result;
-                    document.getElementById('final-preview').classList.remove('hidden');
-                    document.getElementById('placeholder').classList.add('hidden');
+                    document.getElementById('imgPreview').src = e.target.result;
+                    document.getElementById('imgPreview').classList.remove('hidden');
+                    document.getElementById('dropText').classList.add('hidden');
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        async function deployTurbo() {
+        async function runTurboUpload() {
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
             const cat = document.getElementById('p-cat').value;
             const desc = document.getElementById('p-desc').value;
 
-            if(!name || !price || !selectedFile) return alert("Missing information!");
+            if(!name || !price || !selectedFile) return alert("Bhai, Details aur Image dono zaroori hain!");
 
-            document.getElementById('upload-loader').style.display = "block";
-            document.getElementById('btn-text').innerText = "TURBO UPLOADING...";
+            document.getElementById('loader').style.display = "block";
+            document.getElementById('btnText').innerText = "TURBO SYNCING...";
+            document.getElementById('uploadBtn').disabled = true;
 
             try {
-                // STEP A: Upload to Cloudinary (Direct & Fast)
+                // Step 1: Direct Cloudinary Upload (No Mismatch possible here)
                 const formData = new FormData();
                 formData.append("file", selectedFile);
-                formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+                formData.append("upload_preset", UPLOAD_PRESET);
 
-                const cloudRes = await fetch(CLOUDINARY_URL, {
+                const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
                     method: "POST",
                     body: formData
                 });
+                
                 const cloudData = await cloudRes.json();
-                const imageUrl = cloudData.secure_url;
+                
+                if(!cloudData.secure_url) {
+                    throw new Error("Cloudinary Error: Check Unsigned Preset 'ml_default'");
+                }
 
-                // STEP B: Save to Firestore
+                const finalImageUrl = cloudData.secure_url;
+
+                // Step 2: Push to Firestore
                 await db.collection("products").add({
-                    name,
-                    price: price + " Rs.",
+                    name: name,
+                    price: price,
                     category: cat || "General",
                     description: desc,
-                    imageUrl: imageUrl,
+                    imageUrl: finalImageUrl,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("🚀 SUCCESS! Product Deployed via Turbo Link.");
+                alert("🚀 PRODUCT IS LIVE! Storefront synced.");
                 location.reload();
 
             } catch (err) {
                 console.error(err);
-                alert("Upload Failed. Check Cloudinary Upload Preset settings.");
+                alert("Upload failed! Console check karein (F12). Error: " + err.message);
             } finally {
-                document.getElementById('upload-loader').style.display = "none";
-                document.getElementById('btn-text').innerText = "DEPLOY TO MART";
+                document.getElementById('loader').style.display = "none";
+                document.getElementById('btnText').innerText = "PUSH TO BRITISH MART";
+                document.getElementById('uploadBtn').disabled = false;
             }
         }
     </script>
